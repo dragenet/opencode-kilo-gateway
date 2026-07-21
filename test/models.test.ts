@@ -40,7 +40,7 @@ describe("supportsTools", () => {
 
 describe("mapKiloModel", () => {
   it("maps a raw Kilo model to an opencode model", () => {
-    const model = mapKiloModel(toolModel)
+    const model = mapKiloModel(toolModel, "https://api.kilo.ai/api/openrouter")
     expect(model.id).toBe("z-ai/glm-5.1")
     expect(model.name).toBe("GLM 5.1")
     expect(model.status).toBe("active")
@@ -51,6 +51,12 @@ describe("mapKiloModel", () => {
     expect(model.capabilities.reasoning).toBe(true)
     expect(model.capabilities.attachment).toBe(true)
     expect(model.capabilities.input.image).toBe(true)
+    expect(model.providerID).toBe("kilo")
+    expect(model.api).toEqual({
+      id: "z-ai/glm-5.1",
+      url: "https://api.kilo.ai/api/openrouter",
+      npm: "@ai-sdk/openai-compatible",
+    })
   })
 })
 
@@ -76,6 +82,7 @@ describe("fetchKiloModels", () => {
         headers: expect.objectContaining({ Authorization: "Bearer tok_abc" }),
       }),
     )
+    expect(models["z-ai/glm-5.1"].api.url).toBe("https://api.kilo.ai/api/organizations/org_1")
   })
 
   it("falls back to the public endpoint on 401", async () => {
@@ -101,10 +108,14 @@ describe("fetchKiloModels", () => {
 
   it("uses the public endpoint when there is no organization", async () => {
     const fetchImpl = vi.fn().mockResolvedValue({ status: 200, ok: true, json: async () => ({ data: [toolModel] }) })
-    await fetchKiloModels({ baseUrl: "https://api.kilo.ai", fetchImpl: fetchImpl as unknown as typeof fetch })
+    const models = await fetchKiloModels({
+      baseUrl: "https://api.kilo.ai",
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    })
     expect(fetchImpl).toHaveBeenCalledWith(
       "https://api.kilo.ai/api/openrouter/models",
       expect.anything(),
     )
+    expect(models["z-ai/glm-5.1"].api.url).toBe("https://api.kilo.ai/api/openrouter")
   })
 })

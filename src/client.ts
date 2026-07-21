@@ -15,7 +15,13 @@ export interface StoredApiAuth {
   key: string
 }
 
-export type StoredAuth = StoredOAuthAuth | StoredApiAuth | undefined
+export interface StoredWellKnownAuth {
+  type: "wellknown"
+  key: string
+  token: string
+}
+
+export type StoredAuth = StoredOAuthAuth | StoredApiAuth | StoredWellKnownAuth | undefined
 
 const AUTH_JSON_PATH = join(homedir(), ".local", "share", "opencode", "auth.json")
 

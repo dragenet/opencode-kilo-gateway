@@ -1,3 +1,7 @@
+import { PROVIDER_ID } from "./config"
+
+export const KILO_AI_SDK_NPM = "@ai-sdk/openai-compatible"
+
 export interface KiloModelPricing {
   prompt: string
   completion: string
@@ -31,7 +35,7 @@ export interface OpencodeModelCost {
 
 export interface OpencodeModelLimit {
   context: number
-  output?: number
+  output: number
 }
 
 export interface OpencodeModelCapabilities {
@@ -46,6 +50,8 @@ export interface OpencodeModelCapabilities {
 
 export interface OpencodeModel {
   id: string
+  providerID: string
+  api: { id: string; url: string; npm: string }
   name: string
   status: "active"
   capabilities: OpencodeModelCapabilities
@@ -70,7 +76,7 @@ export function supportsTools(model: KiloRawModel): boolean {
 }
 
 /** Maps a raw Kilo/OpenRouter-shaped model into an opencode `Model`. */
-export function mapKiloModel(model: KiloRawModel): OpencodeModel {
+export function mapKiloModel(model: KiloRawModel, apiUrl: string): OpencodeModel {
   const inputModalities = model.architecture?.input_modalities ?? []
   const outputModalities = model.architecture?.output_modalities ?? []
   const supportedParameters = model.supported_parameters ?? []
@@ -78,6 +84,8 @@ export function mapKiloModel(model: KiloRawModel): OpencodeModel {
 
   return {
     id: model.id,
+    providerID: PROVIDER_ID,
+    api: { id: model.id, url: apiUrl, npm: KILO_AI_SDK_NPM },
     name: model.name ?? model.id,
     status: "active",
     capabilities: {
@@ -111,7 +119,9 @@ export function mapKiloModel(model: KiloRawModel): OpencodeModel {
     },
     limit: {
       context: model.context_length,
-      ...(resolveOutputLimit(model) !== undefined ? { output: resolveOutputLimit(model) } : {}),
+      // Kilo doesn't always report an explicit output token limit; fall back
+      // to the model's context length as a reasonable default in that case.
+      output: resolveOutputLimit(model) ?? model.context_length,
     },
     options: {},
     headers: {},
@@ -137,6 +147,13 @@ function modelsEndpoint(baseUrl: string, accountId?: string): string {
   return accountId
     ? `${baseUrl}/api/organizations/${encodeURIComponent(accountId)}/models`
     : `${baseUrl}/api/openrouter/models`
+}
+
+/** Mirrors the org-scoped/public base URL used for chat routing (see `src/loader.ts`). */
+function chatBaseUrl(baseUrl: string, accountId?: string): string {
+  return accountId
+    ? `${baseUrl}/api/organizations/${encodeURIComponent(accountId)}`
+    : `${baseUrl}/api/openrouter`
 }
 
 /**
@@ -169,7 +186,7 @@ export async function fetchKiloModels(options: FetchModelsOptions): Promise<Reco
   const result: Record<string, OpencodeModel> = {}
   for (const raw of body.data) {
     if (!supportsTools(raw)) continue
-    result[raw.id] = mapKiloModel(raw)
+    result[raw.id] = mapKiloModel(raw, chatBaseUrl(baseUrl, accountId))
   }
   return result
 }
