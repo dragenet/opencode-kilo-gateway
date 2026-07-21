@@ -34,10 +34,12 @@ interface SdkClientWithAuthAccessor {
 /**
  * Reads the currently stored credential for a provider.
  *
- * Tries the opencode SDK client's auth accessor first (duck-typed, since
- * the exact generated method name can vary by opencode version), and falls
- * back to reading `auth.json` directly — the same file opencode writes to
- * for plugin credentials.
+ * Tries a duck-typed SDK client auth accessor first, for forward
+ * compatibility if a future `@opencode-ai/sdk` version adds one. As of the
+ * currently pinned SDK version, no such accessor exists on the real client
+ * type — this branch is a no-op today, and every call falls through to
+ * reading `auth.json` directly, the same file opencode writes to for
+ * plugin credentials.
  */
 export async function getStoredAuth(client: unknown, providerId: string): Promise<StoredAuth> {
   const accessor = (client as SdkClientWithAuthAccessor | undefined)?.auth?.get
