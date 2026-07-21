@@ -17,12 +17,12 @@ describe("buildLoaderResult", () => {
     })
   })
 
-  it("scopes the base URL to the organization endpoint when accountId is set", () => {
+  it("uses the public endpoint as the chat base when accountId is set, scoping via header instead", () => {
     const result = buildLoaderResult(
       { type: "oauth", access: "tok_abc", refresh: "tok_abc", expires: 1, accountId: "org_1" },
       "0.1.0",
     )
-    expect(result.baseURL).toBe("https://api.kilo.ai/api/organizations/org_1")
+    expect(result.baseURL).toBe("https://api.kilo.ai/api/openrouter")
     expect(result.headers?.["X-KiloCode-OrganizationId"]).toBe("org_1")
   })
 

@@ -82,7 +82,7 @@ describe("fetchKiloModels", () => {
         headers: expect.objectContaining({ Authorization: "Bearer tok_abc" }),
       }),
     )
-    expect(models["z-ai/glm-5.1"].api.url).toBe("https://api.kilo.ai/api/organizations/org_1")
+    expect(models["z-ai/glm-5.1"].api.url).toBe("https://api.kilo.ai/api/openrouter")
   })
 
   it("falls back to the public endpoint on 401", async () => {

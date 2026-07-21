@@ -149,11 +149,9 @@ function modelsEndpoint(baseUrl: string, accountId?: string): string {
     : `${baseUrl}/api/openrouter/models`
 }
 
-/** Mirrors the org-scoped/public base URL used for chat routing (see `src/loader.ts`). */
-function chatBaseUrl(baseUrl: string, accountId?: string): string {
-  return accountId
-    ? `${baseUrl}/api/organizations/${encodeURIComponent(accountId)}`
-    : `${baseUrl}/api/openrouter`
+/** Returns the chat-completions base URL (always the public endpoint, org scoping via header). */
+function chatBaseUrl(baseUrl: string): string {
+  return `${baseUrl}/api/openrouter`
 }
 
 /**
@@ -186,7 +184,7 @@ export async function fetchKiloModels(options: FetchModelsOptions): Promise<Reco
   const result: Record<string, OpencodeModel> = {}
   for (const raw of body.data) {
     if (!supportsTools(raw)) continue
-    result[raw.id] = mapKiloModel(raw, chatBaseUrl(baseUrl, accountId))
+    result[raw.id] = mapKiloModel(raw, chatBaseUrl(baseUrl))
   }
   return result
 }

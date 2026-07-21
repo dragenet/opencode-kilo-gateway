@@ -23,9 +23,7 @@ export function buildLoaderResult(
 
   const { baseUrl: embeddedBaseUrl, token } = parseKiloToken(auth.access)
   const apiBase = embeddedBaseUrl ?? resolveApiBase(envApiUrl)
-  const baseURL = auth.accountId
-    ? `${apiBase}/api/organizations/${encodeURIComponent(auth.accountId)}`
-    : `${apiBase}/api/openrouter`
+  const baseURL = `${apiBase}/api/openrouter`
 
   return {
     baseURL,
