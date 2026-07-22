@@ -1,0 +1,4 @@
+# Vendored, upstream-distributed Yarn release binary — do not apply
+# whitespace/line-ending normalization or treat trailing whitespace as an
+# error against its distributed contents.
+.yarn/releases/*.cjs -whitespace binary

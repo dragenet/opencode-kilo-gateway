@@ -24,8 +24,8 @@ placed directly inside `~/.config/opencode/plugins/` (not a symlinked package
 directory), so symlink the built entry point itself:
 
 ```bash
-npm install
-npm run build
+yarn install
+yarn build
 ln -sf "$(pwd)/dist/index.js" ~/.config/opencode/plugins/opencode-kilo-gateway.js
 ```
 
