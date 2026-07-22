@@ -1,0 +1,14 @@
+services:
+  opencode-test:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    stdin_open: true
+    tty: true
+    working_dir: /workspace
+    volumes:
+      - opencode-test-auth:/root/.local/share/opencode
+      - .:/workspace:ro
+
+volumes:
+  opencode-test-auth:
