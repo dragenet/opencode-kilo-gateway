@@ -40,8 +40,13 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
+          # `publish` is intentionally omitted: the actual npm publish happens
+          # in a separate step below, using plain `npm publish --provenance`
+          # directly so npm's OIDC trusted-publishing flow is exercised
+          # unambiguously (changesets/action's own publish path would shell
+          # out via package-manager-detector to `yarn npm publish`, which has
+          # no confirmed OIDC support).
           version: yarn changeset version
-          publish: "" # intentionally not used — OIDC publish is a separate step below
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
