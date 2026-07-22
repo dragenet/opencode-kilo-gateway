@@ -58,5 +58,5 @@ jobs:
           if npm view "$PKG_NAME@$PKG_VERSION" version >/dev/null 2>&1; then
             echo "$PKG_NAME@$PKG_VERSION already on npm, skipping publish"
           else
-            npm publish --provenance
+            npm publish --provenance --tag latest
           fi
