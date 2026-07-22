@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write       # changesets/action creates commits/tags/releases
+  pull-requests: write  # changesets/action opens the Version Packages PR
+  id-token: write       # OIDC for npm trusted publishing
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # changesets needs full history to compute changes
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Enable Corepack (Yarn 4)
+        run: corepack enable
+
+      - run: yarn install --immutable
+      - run: yarn build
+      - run: yarn test
+
+      - name: Ensure a recent npm (OIDC support)
+        run: npm install -g npm@latest
+
+      - name: Create or update the Version Packages PR
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: yarn changeset version
+          publish: "" # intentionally not used — OIDC publish is a separate step below
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npm (only when nothing left to version)
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "$PKG_NAME@$PKG_VERSION" version >/dev/null 2>&1; then
+            echo "$PKG_NAME@$PKG_VERSION already on npm, skipping publish"
+          else
+            npm publish --provenance
+          fi

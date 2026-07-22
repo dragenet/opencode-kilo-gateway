@@ -84,6 +84,25 @@ yarn test        # run the unit test suite
 yarn build       # compile TypeScript to dist/
 ```
 
+## Releasing
+
+This project uses [Changesets](https://github.com/changesets/changesets) for automated
+semantic versioning and changelog generation.
+
+- **Add a changeset in your PR**: run `yarn changeset`, describe your change, and pick
+  the appropriate bump (patch, minor, or major). Commit the generated `.changeset/*.md`
+  file alongside your code.
+- **Version Packages PR**: merging to `master` triggers `release.yml`, which opens or
+  updates a "Version Packages" PR that bumps `package.json` and writes `CHANGELOG.md`
+  from all pending changesets.
+- **Publish**: merging the Version Packages PR triggers the actual `npm publish` via
+  OIDC trusted publishing (no long-lived tokens).
+
+The very first release (0.1.0) was published manually from a local machine — this is
+required because npm's Trusted Publisher can only be configured after the package
+already exists. All subsequent releases are governed by the automated Changesets flow
+above.
+
 ## License
 
 MIT
