@@ -3,3 +3,9 @@ dist/
 *.log
 .DS_Store
 .env
+
+# Yarn Berry ephemeral files (do NOT ignore .yarn/releases/, .yarn/patches/, .yarn/plugins/, .yarn/sdks/, .yarnrc.yml)
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz

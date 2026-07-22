@@ -1,8 +1,9 @@
 FROM node:22-slim AS builder
 WORKDIR /plugin
-COPY package.json package-lock.json tsconfig.json ./
+COPY package.json yarn.lock .yarnrc.yml tsconfig.json ./
+COPY .yarn/releases .yarn/releases
 COPY src/ src/
-RUN npm ci && npm run build
+RUN corepack enable && yarn install --immutable && yarn build
 
 FROM node:22-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ripgrep && rm -rf /var/lib/apt/lists/*

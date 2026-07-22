@@ -73,9 +73,9 @@ unchanged — the plugin owns the same `kilo` provider id.
 ## Development
 
 ```bash
-npm install
-npm test        # run the unit test suite
-npm run build   # compile TypeScript to dist/
+yarn install
+yarn test        # run the unit test suite
+yarn build       # compile TypeScript to dist/
 ```
 
 ## License
