@@ -96,4 +96,19 @@ describe("KiloGateway", () => {
       expect.objectContaining({ token: "env_key_xyz", accountId: "org_env" }),
     )
   })
+
+  it("treats an empty-string KILO_API_KEY as unset, falling through to stored OAuth", async () => {
+    process.env.KILO_API_KEY = ""
+    vi.mocked(getStoredAuth).mockResolvedValue(undefined)
+    vi.mocked(fetchKiloModels).mockResolvedValue({})
+
+    const hooks = await KiloGateway({ client: {} } as never)
+    await hooks.provider?.models?.({} as never, {
+      auth: { type: "oauth", access: "tok_stored", refresh: "tok_stored", expires: 1, accountId: "org_stored" },
+    } as never)
+
+    expect(fetchKiloModels).toHaveBeenCalledWith(
+      expect.objectContaining({ token: "tok_stored" }),
+    )
+  })
 })
