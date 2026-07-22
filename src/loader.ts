@@ -45,7 +45,7 @@ export function buildLoaderResult(
   return {
     baseURL,
     apiKey: token,
-    headers: buildKiloHeaders({ ...(envOrgId ?? auth.accountId ? { accountId: envOrgId ?? auth.accountId } : {}), version }),
+    headers: buildKiloHeaders({ ...(envOrgId || auth.accountId ? { accountId: envOrgId || auth.accountId } : {}), version }),
   }
 }
 

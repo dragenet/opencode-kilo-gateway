@@ -91,6 +91,17 @@ describe("buildLoaderResult", () => {
     )
     expect(result.apiKey).toBe("tok_stored")
   })
+
+  it("treats an empty-string KILO_ORG_ID as unset, falling through to stored accountId", () => {
+    const result = buildLoaderResult(
+      { type: "oauth", access: "tok_stored", refresh: "tok_stored", expires: 1, accountId: "org_stored" },
+      "0.1.0",
+      undefined,
+      undefined,
+      "",
+    )
+    expect(result.headers?.["X-KiloCode-OrganizationId"]).toBe("org_stored")
+  })
 })
 
 describe("createLoader", () => {
