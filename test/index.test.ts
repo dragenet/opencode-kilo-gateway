@@ -64,7 +64,7 @@ describe("KiloGateway", () => {
       auth: { type: "oauth", access: "tok_xyz", refresh: "tok_xyz", expires: 1, accountId: "org_2" },
     } as never)
 
-    expect(fetchKiloModels).toHaveBeenCalledWith(
+    expect(fetchKiloModels).toHaveBeenLastCalledWith(
       expect.objectContaining({ token: "tok_xyz", accountId: "org_2" }),
     )
   })
@@ -76,7 +76,7 @@ describe("KiloGateway", () => {
     const hooks = await KiloGateway({ client: {} } as never)
     await hooks.provider?.models?.({} as never, {} as never)
 
-    expect(fetchKiloModels).toHaveBeenCalledWith(
+    expect(fetchKiloModels).toHaveBeenLastCalledWith(
       expect.objectContaining({ token: undefined, accountId: undefined }),
     )
   })
@@ -92,7 +92,7 @@ describe("KiloGateway", () => {
       auth: { type: "oauth", access: "tok_stored", refresh: "tok_stored", expires: 1, accountId: "org_stored" },
     } as never)
 
-    expect(fetchKiloModels).toHaveBeenCalledWith(
+    expect(fetchKiloModels).toHaveBeenLastCalledWith(
       expect.objectContaining({ token: "env_key_xyz", accountId: "org_env" }),
     )
   })
@@ -107,7 +107,7 @@ describe("KiloGateway", () => {
       auth: { type: "oauth", access: "tok_stored", refresh: "tok_stored", expires: 1, accountId: "org_stored" },
     } as never)
 
-    expect(fetchKiloModels).toHaveBeenCalledWith(
+    expect(fetchKiloModels).toHaveBeenLastCalledWith(
       expect.objectContaining({ token: "tok_stored" }),
     )
   })
@@ -122,7 +122,7 @@ describe("KiloGateway", () => {
       auth: { type: "oauth", access: "tok_stored", refresh: "tok_stored", expires: 1, accountId: "org_stored" },
     } as never)
 
-    expect(fetchKiloModels).toHaveBeenCalledWith(
+    expect(fetchKiloModels).toHaveBeenLastCalledWith(
       expect.objectContaining({ accountId: "org_stored" }),
     )
   })
