@@ -41,6 +41,12 @@ ln -sf "$(pwd)/dist/index.js" ~/.config/opencode/plugins/opencode-kilo-gateway.j
 
 - `KILO_API_URL` (optional) — override the Kilo gateway base URL. Defaults to
   `https://api.kilo.ai`.
+- `KILO_API_KEY` (optional) — directly supply a gateway API key as the bearer
+  token, bypassing interactive OAuth login entirely. Best for non-interactive
+  and CI environments.
+- `KILO_ORG_ID` (optional) — override the organization ID used for scoping
+  model listings and API requests. Best for non-interactive and CI environments.
+  Composes with either credential source (OAuth or `KILO_API_KEY`).
 
 If you were previously using a static `kilo` provider with a manually configured
 organization header, remove it — this plugin supplies the organization automatically:

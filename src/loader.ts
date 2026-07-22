@@ -23,7 +23,19 @@ export function buildLoaderResult(
   auth: StoredAuth,
   version: string,
   envApiUrl?: string,
+  envApiKey?: string,
+  envOrgId?: string,
 ): LoaderResult | Record<string, never> {
+  if (envApiKey) {
+    const apiBase = resolveApiBase(envApiUrl)
+    const baseURL = `${apiBase}/api/openrouter`
+    return {
+      baseURL,
+      apiKey: envApiKey,
+      headers: buildKiloHeaders({ ...(envOrgId ? { accountId: envOrgId } : {}), version }),
+    }
+  }
+
   if (!auth || auth.type !== "oauth" || !auth.access) return {}
 
   const { baseUrl: embeddedBaseUrl, token } = parseKiloToken(auth.access)
@@ -33,7 +45,7 @@ export function buildLoaderResult(
   return {
     baseURL,
     apiKey: token,
-    headers: buildKiloHeaders({ ...(auth.accountId ? { accountId: auth.accountId } : {}), version }),
+    headers: buildKiloHeaders({ ...(envOrgId ?? auth.accountId ? { accountId: envOrgId ?? auth.accountId } : {}), version }),
   }
 }
 
@@ -41,6 +53,6 @@ export function buildLoaderResult(
 export function createLoader(version: string) {
   return async (getAuth: () => Promise<StoredAuth>): Promise<LoaderResult | Record<string, never>> => {
     const auth = await getAuth()
-    return buildLoaderResult(auth, version, process.env.KILO_API_URL)
+    return buildLoaderResult(auth, version, process.env.KILO_API_URL, process.env.KILO_API_KEY, process.env.KILO_ORG_ID)
   }
 }

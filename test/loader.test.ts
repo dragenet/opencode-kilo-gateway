@@ -1,8 +1,17 @@
 // test/loader.test.ts
-import { describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { buildLoaderResult, createLoader } from "../src/loader"
 
 describe("buildLoaderResult", () => {
+  beforeEach(() => {
+    delete process.env.KILO_API_KEY
+    delete process.env.KILO_ORG_ID
+  })
+  afterEach(() => {
+    delete process.env.KILO_API_KEY
+    delete process.env.KILO_ORG_ID
+  })
+
   it("returns an empty object when there is no oauth credential", () => {
     expect(buildLoaderResult(undefined, "0.1.0")).toEqual({})
     expect(buildLoaderResult({ type: "api", key: "k" }, "0.1.0")).toEqual({})
@@ -43,6 +52,34 @@ describe("buildLoaderResult", () => {
       "https://env-override.example.com",
     )
     expect(result.baseURL).toBe("https://env-override.example.com/api/openrouter")
+  })
+
+  it("uses KILO_API_KEY env var as bearer token, bypassing stored auth entirely", () => {
+    const result = buildLoaderResult(undefined, "0.1.0", undefined, "env_key_abc")
+    expect(result).toEqual({
+      baseURL: "https://api.kilo.ai/api/openrouter",
+      apiKey: "env_key_abc",
+      headers: expect.objectContaining({ "User-Agent": "opencode-kilo-gateway/0.1.0" }),
+    })
+    expect(result.headers?.["X-KiloCode-OrganizationId"]).toBeUndefined()
+  })
+
+  it("uses KILO_API_KEY + KILO_ORG_ID together, bypassing stored auth", () => {
+    const result = buildLoaderResult(undefined, "0.1.0", undefined, "env_key_abc", "org_env")
+    expect(result.apiKey).toBe("env_key_abc")
+    expect(result.headers?.["X-KiloCode-OrganizationId"]).toBe("org_env")
+  })
+
+  it("prefers KILO_ORG_ID over stored accountId when both are present", () => {
+    const result = buildLoaderResult(
+      { type: "oauth", access: "tok_abc", refresh: "tok_abc", expires: 1, accountId: "org_stored" },
+      "0.1.0",
+      undefined,
+      undefined,
+      "org_env",
+    )
+    expect(result.apiKey).toBe("tok_abc")
+    expect(result.headers?.["X-KiloCode-OrganizationId"]).toBe("org_env")
   })
 })
 

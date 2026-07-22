@@ -39,8 +39,8 @@ export const KiloGateway: Plugin = async (input) => {
       id: PROVIDER_ID,
       async models(_provider, ctx) {
         const auth = (ctx as { auth?: { type?: string; access?: string; accountId?: string } }).auth
-        const token = auth?.type === "oauth" ? auth.access : undefined
-        const accountId = auth?.type === "oauth" ? auth.accountId : undefined
+        const token = process.env.KILO_API_KEY ?? (auth?.type === "oauth" ? auth.access : undefined)
+        const accountId = process.env.KILO_ORG_ID ?? (auth?.type === "oauth" ? auth.accountId : undefined)
         return fetchKiloModels({ baseUrl: apiBase, accountId, token })
       },
     },

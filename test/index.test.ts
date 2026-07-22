@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("../src/client", () => ({ getStoredAuth: vi.fn() }))
 vi.mock("../src/profile", async () => {
@@ -16,6 +16,15 @@ import { fetchKiloModels } from "../src/models"
 import { KiloGateway } from "../src/index"
 
 describe("KiloGateway", () => {
+  beforeEach(() => {
+    delete process.env.KILO_API_KEY
+    delete process.env.KILO_ORG_ID
+  })
+  afterEach(() => {
+    delete process.env.KILO_API_KEY
+    delete process.env.KILO_ORG_ID
+  })
+
   it("registers only the login method when there is no stored credential", async () => {
     vi.mocked(getStoredAuth).mockResolvedValue(undefined)
 
@@ -69,6 +78,22 @@ describe("KiloGateway", () => {
 
     expect(fetchKiloModels).toHaveBeenCalledWith(
       expect.objectContaining({ token: undefined, accountId: undefined }),
+    )
+  })
+
+  it("prefers KILO_API_KEY and KILO_ORG_ID env vars over stored auth", async () => {
+    process.env.KILO_API_KEY = "env_key_xyz"
+    process.env.KILO_ORG_ID = "org_env"
+    vi.mocked(getStoredAuth).mockResolvedValue(undefined)
+    vi.mocked(fetchKiloModels).mockResolvedValue({})
+
+    const hooks = await KiloGateway({ client: {} } as never)
+    await hooks.provider?.models?.({} as never, {
+      auth: { type: "oauth", access: "tok_stored", refresh: "tok_stored", expires: 1, accountId: "org_stored" },
+    } as never)
+
+    expect(fetchKiloModels).toHaveBeenCalledWith(
+      expect.objectContaining({ token: "env_key_xyz", accountId: "org_env" }),
     )
   })
 })
