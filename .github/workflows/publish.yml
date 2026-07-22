@@ -1,0 +1,37 @@
+name: Publish Package
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # required for npm OIDC trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      # Trusted publishing requires npm CLI >= 11.5.1; ensure a recent one
+      # regardless of what ships with the pinned Node version above.
+      - name: Ensure a recent npm (OIDC support)
+        run: npm install -g npm@latest
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+
+      # No NODE_AUTH_TOKEN here on purpose: with a Trusted Publisher configured
+      # on npmjs.com for this repo + workflow filename, npm authenticates via
+      # this workflow's OIDC identity token instead of a long-lived secret.
+      - name: Publish to npm
+        run: npm publish --provenance

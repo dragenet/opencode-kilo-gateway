@@ -19,19 +19,21 @@ for the implementation plan.
 
 Build the plugin, then either:
 
-**Local development** — symlink (or reference by path) into opencode's plugin directory:
+**Local development** — opencode only auto-discovers individual `.js`/`.ts` files
+placed directly inside `~/.config/opencode/plugins/` (not a symlinked package
+directory), so symlink the built entry point itself:
 
 ```bash
 npm install
 npm run build
-ln -s "$(pwd)" ~/.config/opencode/plugins/opencode-kilo-gateway
+ln -sf "$(pwd)/dist/index.js" ~/.config/opencode/plugins/opencode-kilo-gateway.js
 ```
 
 **Published package** — add to your opencode config's plugin list:
 
 ```jsonc
 {
-  "plugin": ["opencode-kilo-gateway"]
+  "plugin": ["@dragenetlabs/opencode-kilo-gateway"]
 }
 ```
 
@@ -44,7 +46,7 @@ If you were previously using a static `kilo` provider with a manually configured
 organization header, remove it — this plugin supplies the organization automatically:
 
 ```jsonc
-// Remove this once opencode-kilo-gateway is installed:
+// Remove this once @dragenetlabs/opencode-kilo-gateway is installed:
 "provider": {
   "kilo": { "options": { "headers": { "X-KiloCode-OrganizationId": "..." } } }
 }
@@ -62,8 +64,9 @@ unchanged — the plugin owns the same `kilo` provider id.
 3. Run the **Kilo · Switch organization** method (via `opencode auth login` and via
    `/connect`) → confirm the organization changes and the model list updates accordingly.
 4. Start a chat using a `kilo/...` model → confirm the request succeeds through the
-   org-scoped base URL with the correct headers (inspect via `KILO_API_URL` pointed at a
-   local proxy/logger if needed).
+   shared `/api/openrouter` base with the `X-KiloCode-OrganizationId` header set when an
+   organization is selected (inspect via `KILO_API_URL` pointed at a local proxy/logger if
+   needed).
 5. If you have a token with an embedded base-URL prefix (self-hosted gateway), confirm it
    overrides the default/`KILO_API_URL` base.
 
