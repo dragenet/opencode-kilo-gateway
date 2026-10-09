@@ -246,6 +246,129 @@ describe("createKiloState", () => {
     expect(onChange).toHaveBeenCalledTimes(1)
   })
 
+  describe("account binding", () => {
+    function switching(opts: { profileFailsOnB?: boolean; modelsFailOnB?: boolean; orgB?: string }) {
+      let current = "A"
+      const conn = connection(() => ({
+        type: "oauth",
+        access: `tok-${current}`,
+        refresh: "r",
+        expires: 1,
+        metadata: { accountID: current === "A" ? "a" : (opts.orgB ?? "a") },
+      }))
+      const fetchImpl = vi.fn(async (url: string, init?: { headers?: Record<string, string> }) => {
+        const onB = init?.headers?.Authorization === "Bearer tok-B"
+        if (url.endsWith("/api/profile")) {
+          if (onB && opts.profileFailsOnB) throw new Error("profile down")
+          return json(profileBody)
+        }
+        if (onB && opts.modelsFailOnB) return json({}, 500)
+        return json({ data: [toolModel] })
+      })
+      const kilo = setup({ conn, fetchImpl })
+      return { ...kilo, switchToB: () => (current = "B") }
+    }
+
+    it("token change + profile failure clears orgOptions", async () => {
+      const { state, refresh, switchToB } = switching({ profileFailsOnB: true })
+      await refresh()
+      expect(state.orgOptions).toHaveLength(3)
+      switchToB()
+      await refresh()
+      expect(state.auth?.token).toBe("tok-B")
+      expect(state.orgOptions).toEqual([])
+    })
+
+    it("same token + profile failure keeps orgOptions", async () => {
+      const conn = connection({ type: "oauth", access: "tok", refresh: "r", expires: 1 })
+      let down = false
+      const fetchImpl = vi.fn(async (url: string) => {
+        if (url.endsWith("/api/profile") && down) throw new Error("down")
+        return url.endsWith("/api/profile") ? json(profileBody) : json({ data: [toolModel] })
+      })
+      const { state, refresh } = setup({ conn, fetchImpl })
+      await refresh()
+      down = true
+      await refresh()
+      expect(state.orgOptions).toHaveLength(3)
+    })
+
+    it("authed → no auth clears orgOptions, and models when public fetch fails", async () => {
+      let signedIn = true
+      const conn: ConnectionApi = {
+        active: vi.fn(async () => (signedIn ? { id: "c1" } : undefined)),
+        resolve: vi.fn(async () => ({ type: "oauth", access: "tok", refresh: "r", expires: 1 })),
+      }
+      let publicDown = false
+      const fetchImpl = vi.fn(async (url: string) => {
+        if (publicDown && !url.endsWith("/api/profile")) throw new Error("down")
+        return url.endsWith("/api/profile") ? json(profileBody) : json({ data: [toolModel] })
+      })
+      const { state, refresh } = setup({ conn, fetchImpl })
+      await refresh()
+      expect(state.models).toEqual([toolModel])
+      signedIn = false
+      publicDown = true
+      await refresh()
+      expect(state.auth).toBeUndefined()
+      expect(state.orgOptions).toEqual([])
+      expect(state.models).toBeUndefined()
+    })
+
+    it("token change + models failure clears models", async () => {
+      const { state, refresh, switchToB } = switching({ modelsFailOnB: true })
+      await refresh()
+      expect(state.models).toEqual([toolModel])
+      switchToB()
+      await refresh()
+      expect(state.models).toBeUndefined()
+    })
+
+    it("org change (same token) + models failure clears models", async () => {
+      let org = "a"
+      const conn = connection(() => ({
+        type: "oauth",
+        access: "tok",
+        refresh: "r",
+        expires: 1,
+        metadata: { accountID: org },
+      }))
+      const fetchImpl = vi.fn(async (url: string) => {
+        if (url.includes("/api/organizations/b/")) return json({}, 500)
+        return url.endsWith("/api/profile") ? json(profileBody) : json({ data: [toolModel] })
+      })
+      const { state, refresh } = setup({ conn, fetchImpl })
+      await refresh()
+      expect(state.models).toEqual([toolModel])
+      org = "b"
+      await refresh()
+      expect(state.auth?.orgId).toBe("b")
+      expect(state.models).toBeUndefined()
+    })
+
+    it("same token & org + models failure keeps previous models", async () => {
+      const conn = connection({ type: "oauth", access: "tok", refresh: "r", expires: 1, metadata: { accountID: "a" } })
+      let down = false
+      const fetchImpl = vi.fn(async (url: string) => {
+        if (down && !url.endsWith("/api/profile")) return json({}, 500)
+        return url.endsWith("/api/profile") ? json(profileBody) : json({ data: [toolModel] })
+      })
+      const { state, refresh } = setup({ conn, fetchImpl })
+      await refresh()
+      down = true
+      await refresh()
+      expect(state.models).toEqual([toolModel])
+    })
+  })
+
+  it("identical successful refreshes call onChange once", async () => {
+    const conn = connection({ type: "oauth", access: "tok", refresh: "r", expires: 1, metadata: { accountID: "a" } })
+    const { refresh, onChange } = setup({ conn })
+    await refresh()
+    await refresh()
+    expect(onChange).toHaveBeenCalledTimes(1)
+  })
+
   it("no credential and no env → auth undefined, orgOptions []", async () => {
     const { state, refresh } = setup({})
     await refresh()

@@ -174,19 +174,29 @@ export function createKiloState(deps: KiloStateDeps): { state: KiloState; refres
     // Stale generations must be discarded before ANY state assignment.
     if (gen !== generation) return
 
-    // onChange rule: called once for every non-stale, completed refresh that
-    // changed something (auth differs, or profile/models were refreshed).
-    // Not called when nothing changed — e.g. network down with the same auth.
-    let changed = !sameAuth(state.auth, auth)
+    // Data must never outlive the account it was fetched for: when the token
+    // changes, a failed profile fetch clears orgOptions; when the token or the
+    // effective org changes, a failed models fetch clears models (undefined →
+    // provider falls back to the catalog). With the same account, a failed
+    // fetch keeps the previous value.
+    const previous = state.auth
+    const tokenChanged = previous?.token !== auth?.token
+    const accountChanged = tokenChanged || previous?.orgId !== auth?.orgId
+    const nextOrgOptions = orgOptions ?? (tokenChanged ? [] : state.orgOptions)
+    const nextModels = models ?? (accountChanged ? undefined : state.models)
+
+    // onChange rule: called once per non-stale, completed refresh in which
+    // auth, orgOptions or models changed in content (compared by value), so
+    // identical periodic refreshes and "network down, same account" refreshes
+    // do not trigger reloads.
+    const changed =
+      !sameAuth(previous, auth) ||
+      JSON.stringify(nextOrgOptions) !== JSON.stringify(state.orgOptions) ||
+      JSON.stringify(nextModels) !== JSON.stringify(state.models)
+
     state.auth = auth
-    if (orgOptions !== undefined) {
-      if (auth || state.orgOptions.length > 0) changed = true
-      state.orgOptions = orgOptions
-    }
-    if (models !== undefined) {
-      state.models = models
-      changed = true
-    }
+    state.orgOptions = nextOrgOptions
+    state.models = nextModels
 
     if (changed) await deps.onChange()
   }
