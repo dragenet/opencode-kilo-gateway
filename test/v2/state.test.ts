@@ -293,25 +293,29 @@ describe("createKiloState", () => {
       expect(state.orgOptions).toHaveLength(3)
     })
 
-    it("authed → no auth clears orgOptions, and models when public fetch fails", async () => {
+    it("authed → no auth clears orgOptions and models without fetching the public catalog", async () => {
       let signedIn = true
       const conn: ConnectionApi = {
         active: vi.fn(async () => (signedIn ? { id: "c1" } : undefined)),
         resolve: vi.fn(async () => ({ type: "oauth", access: "tok", refresh: "r", expires: 1 })),
       }
-      let publicDown = false
-      const fetchImpl = vi.fn(async (url: string) => {
-        if (publicDown && !url.endsWith("/api/profile")) throw new Error("down")
-        return url.endsWith("/api/profile") ? json(profileBody) : json({ data: [toolModel] })
-      })
+      const fetchImpl = okFetch(profileBody, [toolModel])
       const { state, refresh } = setup({ conn, fetchImpl })
       await refresh()
       expect(state.models).toEqual([toolModel])
       signedIn = false
-      publicDown = true
+      fetchImpl.mockClear()
       await refresh()
       expect(state.auth).toBeUndefined()
       expect(state.orgOptions).toEqual([])
+      expect(state.models).toBeUndefined()
+      expect(fetchImpl).not.toHaveBeenCalled()
+    })
+
+    it("no auth at all never fetches models", async () => {
+      const { state, refresh, fetchImpl } = setup({})
+      await refresh()
+      expect(fetchImpl).not.toHaveBeenCalled()
       expect(state.models).toBeUndefined()
     })
 

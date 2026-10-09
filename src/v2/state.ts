@@ -28,9 +28,9 @@ export interface KiloState {
   models?: KiloRawModel[]
 }
 
-export interface ConnectionApi {
-  active(integrationID: string): Promise<unknown | undefined>
-  resolve(connection: unknown): Promise<
+export interface ConnectionApi<C = unknown> {
+  active(integrationID: string): Promise<C | undefined>
+  resolve(connection: C): Promise<
     | {
         type: string
         access?: string
@@ -43,8 +43,8 @@ export interface ConnectionApi {
   >
 }
 
-export interface KiloStateDeps {
-  connection: ConnectionApi
+export interface KiloStateDeps<C = unknown> {
+  connection: ConnectionApi<C>
   env: Record<string, string | undefined>
   fetchImpl?: typeof fetch
   onChange: () => Promise<void>
@@ -59,7 +59,7 @@ function str(value: unknown): string | undefined {
   return typeof value === "string" && value ? value : undefined
 }
 
-async function resolveAuth(deps: KiloStateDeps): Promise<ResolvedAuth | undefined> {
+async function resolveAuth<C>(deps: KiloStateDeps<C>): Promise<ResolvedAuth | undefined> {
   const { env } = deps
   const envKey = env.KILO_API_KEY
   if (envKey) {
@@ -129,7 +129,7 @@ function sameAuth(a: KiloAuth | undefined, b: KiloAuth | undefined): boolean {
   return JSON.stringify(a) === JSON.stringify(b)
 }
 
-export function createKiloState(deps: KiloStateDeps): { state: KiloState; refresh(): Promise<void> } {
+export function createKiloState<C>(deps: KiloStateDeps<C>): { state: KiloState; refresh(): Promise<void> } {
   const state: KiloState = { orgOptions: [] }
   let generation = 0
 
@@ -163,12 +163,8 @@ export function createKiloState(deps: KiloStateDeps): { state: KiloState; refres
       const orgName = profileOrgName ?? resolved?.metadataOrgName ?? previousName
       if (orgName !== undefined) auth = { ...auth, orgName }
     } else {
+      // Signed out: the public catalog is not fetched; models stay undefined.
       orgOptions = []
-      try {
-        models = await fetchRawKiloModels({ baseUrl: resolveApiBase(deps.env.KILO_API_URL), fetchImpl: deps.fetchImpl })
-      } catch {
-        // public catalog unavailable: keep previous models
-      }
     }
 
     // Stale generations must be discarded before ANY state assignment.

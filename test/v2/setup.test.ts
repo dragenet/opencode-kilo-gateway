@@ -8,7 +8,7 @@ function flush() {
   return new Promise<void>((resolve) => setTimeout(resolve, 0))
 }
 
-function fakeCtx(options: { activeImpl?: () => Promise<unknown> } = {}) {
+function fakeCtx(options: { activeImpl?: () => Promise<unknown>; resolveImpl?: () => Promise<unknown> } = {}) {
   const queue: Event[] = []
   let wake: (() => void) | undefined
   let signal: AbortSignal | undefined
@@ -34,7 +34,7 @@ function fakeCtx(options: { activeImpl?: () => Promise<unknown> } = {}) {
           calls.active++
           return options.activeImpl ? options.activeImpl() : undefined
         },
-        resolve: async () => undefined,
+        resolve: async () => (options.resolveImpl ? options.resolveImpl() : undefined),
       },
     },
     provider: {
@@ -127,29 +127,34 @@ describe("setup", () => {
   })
 
   it("credential.switched for kilo triggers refresh + integration.reload + provider.reload; other integration ignored", async () => {
-    const f = fakeCtx()
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ data: [] }), { status: 200 })))
+    let resolves = 0
+    const f = fakeCtx({
+      activeImpl: async () => ({ id: "c1" }),
+      resolveImpl: async () => ({ type: "key", key: ++resolves === 1 ? "key-1" : "key-2" }),
+    })
     const cleanup = await setup(f.ctx)
+    await vi.waitFor(() => {
+      expect(f.calls.integrationReload).toBe(1)
+      expect(f.calls.providerReload).toBe(1)
+    })
     await flush()
     const baseActive = f.calls.active
-    const baseReload = f.calls.integrationReload
 
     f.emit({ type: "credential.switched", data: { integrationID: "other", credentialID: "c1" } })
     f.emit({ type: "credential.updated", data: {} })
     await flush()
     await flush()
     expect(f.calls.active).toBe(baseActive)
+    expect(f.calls.integrationReload).toBe(1)
+    expect(f.calls.providerReload).toBe(1)
 
     f.emit({ type: "credential.switched", data: { integrationID: "kilo", credentialID: "c2" } })
     await vi.waitFor(() => {
-      expect(f.calls.active).toBeGreaterThan(baseActive)
+      expect(f.calls.integrationReload).toBe(2)
+      expect(f.calls.providerReload).toBe(2)
     })
-    f.emit({ type: "credential.switched", data: { integrationID: "kilo", credentialID: null } })
-    await vi.waitFor(() => {
-      expect(f.calls.active).toBeGreaterThan(baseActive + 1)
-    })
-    // onChange is invoked by refresh when state changed; reloads never run for ignored events
-    expect(f.calls.integrationReload).toBe(f.calls.providerReload)
-    expect(f.calls.integrationReload).toBeGreaterThanOrEqual(baseReload)
+    expect(f.calls.active).toBe(baseActive + 1)
     cleanup!()
   })
 

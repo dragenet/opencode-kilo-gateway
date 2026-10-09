@@ -96,6 +96,23 @@ describe("toV2Model", () => {
     expect(model.cost[0].cache.write).toBeCloseTo(3)
   })
 
+  it("clamps negative prices to 0", () => {
+    const model = toV2Model({ ...rawModel, pricing: { ...rawModel.pricing, prompt: "-1", completion: "-0.5" } })
+    expect(model.cost[0].input).toBe(0)
+    expect(model.cost[0].output).toBe(0)
+    expect(model.cost[0].cache.read).toBeCloseTo(0.5)
+  })
+
+  it("produces integer limits", () => {
+    const fractional = toV2Model({ ...rawModel, context_length: 128_000.5, max_completion_tokens: 4_000.7 })
+    expect(Number.isInteger(fractional.limit.context)).toBe(true)
+    expect(Number.isInteger(fractional.limit.output)).toBe(true)
+    const missing = toV2Model({ ...rawModel, context_length: undefined as unknown as number, max_completion_tokens: undefined })
+    expect(missing.limit).toEqual({ context: 0, output: 0 })
+    const fallback = toV2Model({ ...rawModel, context_length: 128_000, max_completion_tokens: -5 })
+    expect(fallback.limit).toEqual({ context: 128_000, output: 128_000 })
+  })
+
   it("falls back to top_provider then context length for output limit", () => {
     const withTop = toV2Model({ ...rawModel, max_completion_tokens: null, top_provider: { max_completion_tokens: 4_000 } })
     expect(withTop.limit.output).toBe(4_000)
@@ -253,7 +270,7 @@ describe("http.request hook", () => {
     }),
   })
 
-  it("rewrites Authorization only for embedded URL tokens", async () => {
+  it("sets Authorization from the stripped token for embedded URL tokens", async () => {
     const { hook } = await setup({
       orgOptions: [],
       auth: credentialAuth({ token: "plain-token", embeddedBaseUrl: true, apiBase: "https://gw.example" }),
@@ -263,11 +280,18 @@ describe("http.request hook", () => {
     expect(e.request.headers.get("authorization")).toBe("Bearer plain-token")
   })
 
-  it("leaves Authorization alone for non-embedded tokens", async () => {
+  it("sets Authorization from the credential token for non-embedded tokens", async () => {
     const { hook } = await setup({ orgOptions: [], auth: credentialAuth({ token: "plain-token" }) })
     const e = make()
     hook("http.request").cb(e)
-    expect(e.request.headers.get("authorization")).toBe("Bearer prefixed-token")
+    expect(e.request.headers.get("authorization")).toBe("Bearer plain-token")
+  })
+
+  it("env key wins over the connection key injected by core", async () => {
+    const { hook } = await setup({ orgOptions: [], auth: credentialAuth({ token: "env-key", source: "env" }) })
+    const e = make()
+    hook("http.request").cb(e)
+    expect(e.request.headers.get("authorization")).toBe("Bearer env-key")
   })
 
   it("leaves Authorization alone without auth", async () => {

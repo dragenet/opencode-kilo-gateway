@@ -18,7 +18,7 @@ export async function setup(ctx: unknown): Promise<(() => void) | void> {
   if (!isV2Context(ctx)) return
 
   const { state, refresh } = createKiloState({
-    connection: ctx.integration.connection as never,
+    connection: ctx.integration.connection,
     env: process.env,
     onChange: async () => {
       await ctx.integration.reload()

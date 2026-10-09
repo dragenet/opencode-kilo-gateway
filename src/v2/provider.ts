@@ -6,10 +6,17 @@ import type { KiloState } from "./state"
 
 type V2Model = Model.Info
 
-function resolveOutputLimit(raw: KiloRawModel): number {
-  if (typeof raw.max_completion_tokens === "number") return raw.max_completion_tokens
-  if (typeof raw.top_provider?.max_completion_tokens === "number") return raw.top_provider.max_completion_tokens
-  return raw.context_length
+// Model.Info limits are integers: floor finite non-negative numbers, otherwise use the fallback.
+function toInt(value: unknown, fallback: number): number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? Math.floor(value) : fallback
+}
+
+function resolveOutputLimit(raw: KiloRawModel, context: number): number {
+  if (typeof raw.max_completion_tokens === "number") return toInt(raw.max_completion_tokens, context)
+  if (typeof raw.top_provider?.max_completion_tokens === "number") {
+    return toInt(raw.top_provider.max_completion_tokens, context)
+  }
+  return context
 }
 
 function modalities(values: string[] | undefined): string[] {
@@ -20,7 +27,8 @@ function modalities(values: string[] | undefined): string[] {
 
 /** Maps a raw Kilo model into a v2 `Model.Info`; all branded-type casts live here. */
 export function toV2Model(raw: KiloRawModel): V2Model {
-  const price = parseApiPrice
+  const price = (value: Parameters<typeof parseApiPrice>[0]) => Math.max(0, parseApiPrice(value))
+  const context = toInt(raw.context_length, 0)
   const info = {
     id: raw.id,
     modelID: raw.id,
@@ -45,7 +53,7 @@ export function toV2Model(raw: KiloRawModel): V2Model {
     ],
     status: "active",
     enabled: true,
-    limit: { context: raw.context_length, output: resolveOutputLimit(raw) },
+    limit: { context, output: resolveOutputLimit(raw, context) },
   }
   return info as unknown as V2Model
 }
@@ -76,7 +84,8 @@ export async function registerProvider(
   await ctx.session.hook(
     "http.request",
     (event) => {
-      if (state.auth?.embeddedBaseUrl) event.request.headers.set("authorization", "Bearer " + state.auth.token)
+      // Core injects the apiKey of the active connection; our env/org-aware token must win.
+      if (state.auth) event.request.headers.set("authorization", "Bearer " + state.auth.token)
     },
     { providerID: PROVIDER_ID },
   )
