@@ -103,6 +103,15 @@ describe("toV2Model", () => {
     expect(none.limit).toEqual({ context: 160_000, output: 160_000 })
   })
 
+  it('maps Kilo "file" modality to pdf and de-duplicates', () => {
+    const model = toV2Model({
+      ...rawModel,
+      architecture: { input_modalities: ["text", "image", "file"], output_modalities: ["text", "file", "pdf"] },
+    })
+    expect(model.capabilities.input).toEqual(["text", "image", "pdf"])
+    expect(model.capabilities.output).toEqual(["text", "pdf"])
+  })
+
   it("defaults modalities to text when empty and name to id", () => {
     const model = toV2Model({
       ...rawModel,
@@ -123,6 +132,17 @@ describe("provider.transform", () => {
     expect(provider.settings.baseURL).toBe("https://api.kilo.ai/api/openrouter")
     expect(provider.settings.keep).toBe(1)
     expect(provider.headers["X-Existing"]).toBe("1")
+  })
+
+  it("sets baseURL and headers on a provider without settings/headers", async () => {
+    const { transforms } = await setup({ orgOptions: [] })
+    const provider: Record<string, any> = {}
+    transforms[0]({
+      update: (_id: string, fn: (p: Record<string, any>) => void) => fn(provider),
+      models: { set: () => {} },
+    })
+    expect(provider.settings.baseURL).toBe("https://api.kilo.ai/api/openrouter")
+    expect(provider.headers["X-Title"]).toBe("Kilo Code")
   })
 
   it("baseURL embedded", async () => {

@@ -13,7 +13,9 @@ function resolveOutputLimit(raw: KiloRawModel): number {
 }
 
 function modalities(values: string[] | undefined): string[] {
-  return values && values.length > 0 ? [...values] : ["text"]
+  // Kilo reports PDFs as "file"; v2 matches capabilities by "pdf".
+  const mapped = (values ?? []).map((value) => (value === "file" ? "pdf" : value))
+  return mapped.length > 0 ? [...new Set(mapped)] : ["text"]
 }
 
 /** Maps a raw Kilo model into a v2 `Model.Info`; all branded-type casts live here. */
