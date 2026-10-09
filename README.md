@@ -61,6 +61,31 @@ organization header, remove it — this plugin supplies the organization automat
 Your existing `kilo/<vendor>/<model>` references (e.g. `kilo/z-ai/glm-5.1`) keep working
 unchanged — the plugin owns the same `kilo` provider id.
 
+## OpenCode v2
+
+The package also exposes the OpenCode v2 plugin API. The default export is
+`{ id: "kilo-gateway", server, setup }`; the named `KiloGateway` export used by v1 is unchanged.
+v1 loaders read only `server` from the default export, so the same package works on both.
+The minimum v1 version for the object default export is 1.18.29, per OpenCode's V1→V2
+migration guide.
+
+- **Install** — add the package under the `plugins` key of your OpenCode config (the legacy
+  `plugin` key is also read):
+
+  ```jsonc
+  {
+    "plugins": ["@dragenetlabs/opencode-kilo-gateway"]
+  }
+  ```
+
+- **Login** — `opencode auth login kilo` and choose **Login with Kilo** (device authorization).
+- **Organizations are accounts** — pick **Kilo · Add organization** to log in with an
+  organization; each organization becomes its own connected account. Switch between them with
+  `opencode auth switch kilo`, or in the TUI via `/connect` → Connected accounts.
+- **Existing logins** — v1 logins are imported automatically.
+- **Environment variables** — `KILO_API_URL`, `KILO_API_KEY` and `KILO_ORG_ID` behave as
+  described under [Configuration](#configuration).
+
 ## Manual verification checklist
 
 1. `opencode auth login` → select **Kilo** → **Login with Kilo** → approve the device code

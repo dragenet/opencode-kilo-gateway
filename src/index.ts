@@ -5,6 +5,7 @@ import { PACKAGE_VERSION, PROVIDER_ID, resolveApiBase } from "./config"
 import { createLoader } from "./loader"
 import { fetchKiloModels } from "./models"
 import { fetchProfile, organizationSelectOptions } from "./profile"
+import { setup } from "./v2/index"
 
 /**
  * The Kilo gateway opencode plugin: device-auth login, cross-surface
@@ -46,3 +47,5 @@ export const KiloGateway: Plugin = async (input) => {
     },
   }
 }
+
+export default { id: "kilo-gateway", server: KiloGateway, setup }
