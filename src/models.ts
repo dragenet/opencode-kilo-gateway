@@ -160,6 +160,20 @@ function chatBaseUrl(baseUrl: string): string {
  * drops any model that does not support tool-calling.
  */
 export async function fetchKiloModels(options: FetchModelsOptions): Promise<Record<string, OpencodeModel>> {
+  const raws = await fetchRawKiloModels(options)
+  const result: Record<string, OpencodeModel> = {}
+  for (const raw of raws) {
+    result[raw.id] = mapKiloModel(raw, chatBaseUrl(options.baseUrl))
+  }
+  return result
+}
+
+/**
+ * Fetches the raw Kilo model list (org-scoped when an organization is
+ * selected), falling back to the public list on a 401 and dropping any model
+ * that does not support tool-calling.
+ */
+export async function fetchRawKiloModels(options: FetchModelsOptions): Promise<KiloRawModel[]> {
   const { baseUrl, accountId, token, fetchImpl = fetch, timeoutMs = 10_000 } = options
   const headers: Record<string, string> = { "Content-Type": "application/json" }
   if (token) headers.Authorization = `Bearer ${token}`
@@ -174,17 +188,12 @@ export async function fetchKiloModels(options: FetchModelsOptions): Promise<Reco
   }
 
   if (res.status === 401 && (accountId || token)) {
-    return fetchKiloModels({ baseUrl, fetchImpl, timeoutMs })
+    return fetchRawKiloModels({ baseUrl, fetchImpl, timeoutMs })
   }
   if (!res.ok) {
     throw new Error(`Failed to fetch Kilo models: HTTP ${res.status}`)
   }
 
   const body = (await res.json()) as { data: KiloRawModel[] }
-  const result: Record<string, OpencodeModel> = {}
-  for (const raw of body.data) {
-    if (!supportsTools(raw)) continue
-    result[raw.id] = mapKiloModel(raw, chatBaseUrl(baseUrl))
-  }
-  return result
+  return body.data.filter(supportsTools)
 }
