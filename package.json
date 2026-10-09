@@ -36,6 +36,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.31.1",
     "@opencode-ai/plugin": "1.18.2",
+    "@opencode/plugin": "2.0.22",
     "@types/node": "^22.0.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
