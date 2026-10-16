@@ -17,7 +17,20 @@ for the implementation plan.
 
 ## Install
 
-Build the plugin, then either:
+**OpenCode v2 from this fork (no build needed)** — `dist/` is committed on the
+`opencode-v2` branch, so reference a commit directly in `opencode.json`:
+
+```json
+"plugin": ["github:jabbas/opencode-kilo-gateway#<commit-sha>"]
+```
+
+OpenCode v2 installs git plugins with `ignoreScripts`, and npm's git fetcher
+tries to "prepare" any package that declares a `build`/`prepare`/`install`
+script — which fails inside OpenCode. That is why the compile script is named
+`compile`, not `build`. After code changes: `yarn compile`, commit `dist/`,
+bump the SHA in `opencode.json`.
+
+Otherwise, build the plugin, then either:
 
 **Local development** — opencode only auto-discovers individual `.js`/`.ts` files
 placed directly inside `~/.config/opencode/plugins/` (not a symlinked package
@@ -25,7 +38,7 @@ directory), so symlink the built entry point itself:
 
 ```bash
 yarn install
-yarn build
+yarn compile
 ln -sf "$(pwd)/dist/index.js" ~/.config/opencode/plugins/opencode-kilo-gateway.js
 ```
 
@@ -106,7 +119,7 @@ migration guide.
 ```bash
 yarn install
 yarn test        # run the unit test suite
-yarn build       # compile TypeScript to dist/
+yarn compile     # compile TypeScript to dist/ (commit dist/ afterwards)
 ```
 
 ## Releasing

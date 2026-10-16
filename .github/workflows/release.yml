@@ -30,7 +30,7 @@ jobs:
         run: corepack enable
 
       - run: yarn install --immutable
-      - run: yarn build
+      - run: yarn compile
       - run: yarn test
 
       - name: Ensure a recent npm (OIDC support)

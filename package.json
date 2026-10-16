@@ -29,7 +29,7 @@
   },
   "packageManager": "yarn@4.17.1",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "compile": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest"
   },
