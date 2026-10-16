@@ -1,5 +1,6 @@
 node_modules/
-dist/
+# dist/ is committed on purpose: OpenCode v2 installs git plugins with
+# ignoreScripts, so it cannot build on install. Rebuild + commit after changes.
 *.log
 .DS_Store
 .env
