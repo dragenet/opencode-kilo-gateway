@@ -30,6 +30,11 @@ export async function setup(ctx) {
                 if (controller.signal.aborted)
                     return;
                 const { type, data } = event;
+                // Core (credential.ts) emits credential.switched whenever the ACTIVE credential of an
+                // integration changes: create+activate, activate, and removal of the active one (with
+                // credentialID null when none is left). credential.updated has no integrationID and only
+                // covers changes that leave the active Kilo credential as is (inactive create/remove,
+                // label rename), so it is deliberately ignored.
                 if (type === "credential.switched" && data?.integrationID === PROVIDER_ID)
                     void refresh();
             }
