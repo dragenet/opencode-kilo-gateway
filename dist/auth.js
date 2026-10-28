@@ -1,5 +1,5 @@
-import { initiateDeviceAuth, waitForDeviceAuthApproval } from "./device-auth";
-import { defaultOrganizationId, fetchProfile } from "./profile";
+import { initiateDeviceAuth, waitForDeviceAuthApproval } from "./device-auth.js";
+import { defaultOrganizationId, fetchProfile } from "./profile.js";
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 /**
  * Builds the primary "Login with Kilo" auth method: runs the device

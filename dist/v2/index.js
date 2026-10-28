@@ -1,7 +1,7 @@
-import { PROVIDER_ID } from "../config";
-import { registerIntegration } from "./integration";
-import { registerProvider } from "./provider";
-import { createKiloState } from "./state";
+import { PROVIDER_ID } from "../config.js";
+import { registerIntegration } from "./integration.js";
+import { registerProvider } from "./provider.js";
+import { createKiloState } from "./state.js";
 function hasFunction(target, key) {
     return typeof target?.[key] === "function";
 }

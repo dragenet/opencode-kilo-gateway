@@ -1,4 +1,4 @@
-import { type KiloRawModel } from "../models";
+import { type KiloRawModel } from "../models.js";
 export declare const PERSONAL = "personal";
 export interface OrgOption {
     value: string;

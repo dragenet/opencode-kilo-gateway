@@ -1,7 +1,7 @@
-import { resolveApiBase } from "../config"
-import { fetchRawKiloModels, type KiloRawModel } from "../models"
-import { fetchProfile, organizationSelectOptions, type KiloProfile } from "../profile"
-import { parseKiloToken } from "../token"
+import { resolveApiBase } from "../config.js"
+import { fetchRawKiloModels, type KiloRawModel } from "../models.js"
+import { fetchProfile, organizationSelectOptions, type KiloProfile } from "../profile.js"
+import { parseKiloToken } from "../token.js"
 
 export const PERSONAL = "personal"
 

@@ -1,5 +1,5 @@
-import { initiateDeviceAuth, waitForDeviceAuthApproval, type WaitForDeviceAuthOptions } from "./device-auth"
-import { defaultOrganizationId, fetchProfile, type SelectOption } from "./profile"
+import { initiateDeviceAuth, waitForDeviceAuthApproval, type WaitForDeviceAuthOptions } from "./device-auth.js"
+import { defaultOrganizationId, fetchProfile, type SelectOption } from "./profile.js"
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000
 

@@ -1,5 +1,5 @@
 // src/device-auth.ts
-import { POLL_INTERVAL_MS } from "./config";
+import { POLL_INTERVAL_MS } from "./config.js";
 /** Starts a Kilo device-authorization grant: `POST /api/device-auth/codes`. */
 export async function initiateDeviceAuth(baseUrl, fetchImpl = fetch) {
     const res = await fetchImpl(`${baseUrl}/api/device-auth/codes`, { method: "POST" });

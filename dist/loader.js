@@ -1,6 +1,6 @@
-import { resolveApiBase } from "./config";
-import { buildKiloHeaders } from "./headers";
-import { parseKiloToken } from "./token";
+import { resolveApiBase } from "./config.js";
+import { buildKiloHeaders } from "./headers.js";
+import { parseKiloToken } from "./token.js";
 /**
  * Builds the provider options opencode/the AI SDK need to talk to Kilo:
  * the shared `/api/openrouter` base URL, the bearer token, and headers.

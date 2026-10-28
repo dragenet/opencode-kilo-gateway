@@ -1,8 +1,8 @@
 import type { Model, Plugin } from "@opencode/plugin"
-import { DEFAULT_KILO_API_URL, HEADER_ORGANIZATION_ID, PACKAGE_VERSION, PROVIDER_ID } from "../config"
-import { buildKiloHeaders } from "../headers"
-import { parseApiPrice, type KiloRawModel } from "../models"
-import type { KiloState } from "./state"
+import { DEFAULT_KILO_API_URL, HEADER_ORGANIZATION_ID, PACKAGE_VERSION, PROVIDER_ID } from "../config.js"
+import { buildKiloHeaders } from "../headers.js"
+import { parseApiPrice, type KiloRawModel } from "../models.js"
+import type { KiloState } from "./state.js"
 
 type V2Model = Model.Info
 

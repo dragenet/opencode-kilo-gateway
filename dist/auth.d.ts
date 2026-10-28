@@ -1,5 +1,5 @@
-import { type WaitForDeviceAuthOptions } from "./device-auth";
-import { type SelectOption } from "./profile";
+import { type WaitForDeviceAuthOptions } from "./device-auth.js";
+import { type SelectOption } from "./profile.js";
 interface AuthorizeSuccess {
     type: "success";
     provider: "kilo";

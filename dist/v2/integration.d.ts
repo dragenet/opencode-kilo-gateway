@@ -1,6 +1,6 @@
 import type { Plugin } from "@opencode/plugin";
-import { type WaitForDeviceAuthOptions } from "../device-auth";
-import { type KiloState } from "./state";
+import { type WaitForDeviceAuthOptions } from "../device-auth.js";
+import { type KiloState } from "./state.js";
 export declare const LOGIN_METHOD_ID = "oauth";
 export declare const ORG_METHOD_ID = "organization";
 export interface IntegrationDeps {

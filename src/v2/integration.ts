@@ -5,10 +5,10 @@ import type {
   IntegrationOAuthMethod,
   IntegrationOAuthMethodRegistration,
 } from "@opencode/plugin/promise/integration"
-import { PROVIDER_ID, resolveApiBase } from "../config"
-import { initiateDeviceAuth, waitForDeviceAuthApproval, type WaitForDeviceAuthOptions } from "../device-auth"
-import { defaultOrganizationId, fetchProfile } from "../profile"
-import { PERSONAL, type KiloState } from "./state"
+import { PROVIDER_ID, resolveApiBase } from "../config.js"
+import { initiateDeviceAuth, waitForDeviceAuthApproval, type WaitForDeviceAuthOptions } from "../device-auth.js"
+import { defaultOrganizationId, fetchProfile } from "../profile.js"
+import { PERSONAL, type KiloState } from "./state.js"
 
 export const LOGIN_METHOD_ID = "oauth"
 export const ORG_METHOD_ID = "organization"

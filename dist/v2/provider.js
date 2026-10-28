@@ -1,6 +1,6 @@
-import { DEFAULT_KILO_API_URL, HEADER_ORGANIZATION_ID, PACKAGE_VERSION, PROVIDER_ID } from "../config";
-import { buildKiloHeaders } from "../headers";
-import { parseApiPrice } from "../models";
+import { DEFAULT_KILO_API_URL, HEADER_ORGANIZATION_ID, PACKAGE_VERSION, PROVIDER_ID } from "../config.js";
+import { buildKiloHeaders } from "../headers.js";
+import { parseApiPrice } from "../models.js";
 // Model.Info limits are integers: floor finite non-negative numbers, otherwise use the fallback.
 function toInt(value, fallback) {
     return typeof value === "number" && Number.isFinite(value) && value >= 0 ? Math.floor(value) : fallback;

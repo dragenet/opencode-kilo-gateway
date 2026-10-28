@@ -1,4 +1,4 @@
-import type { StoredAuth } from "./client";
+import type { StoredAuth } from "./client.js";
 export interface LoaderResult {
     baseURL: string;
     apiKey: string;

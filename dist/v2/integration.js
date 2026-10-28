@@ -1,7 +1,7 @@
-import { PROVIDER_ID, resolveApiBase } from "../config";
-import { initiateDeviceAuth, waitForDeviceAuthApproval } from "../device-auth";
-import { defaultOrganizationId, fetchProfile } from "../profile";
-import { PERSONAL } from "./state";
+import { PROVIDER_ID, resolveApiBase } from "../config.js";
+import { initiateDeviceAuth, waitForDeviceAuthApproval } from "../device-auth.js";
+import { defaultOrganizationId, fetchProfile } from "../profile.js";
+import { PERSONAL } from "./state.js";
 export const LOGIN_METHOD_ID = "oauth";
 export const ORG_METHOD_ID = "organization";
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;

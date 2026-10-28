@@ -1,5 +1,5 @@
 import type { Plugin } from "@opencode-ai/plugin";
-import { setup } from "./v2/index";
+import { setup } from "./v2/index.js";
 /**
  * The Kilo gateway opencode plugin: device-auth login, cross-surface
  * organization selection, and dynamic org-scoped model listing for the

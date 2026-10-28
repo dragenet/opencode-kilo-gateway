@@ -1,10 +1,10 @@
-import { buildLoginMethod, buildSwitchOrgMethod } from "./auth";
-import { getStoredAuth } from "./client";
-import { PACKAGE_VERSION, PROVIDER_ID, resolveApiBase } from "./config";
-import { createLoader } from "./loader";
-import { fetchKiloModels } from "./models";
-import { fetchProfile, organizationSelectOptions } from "./profile";
-import { setup } from "./v2/index";
+import { buildLoginMethod, buildSwitchOrgMethod } from "./auth.js";
+import { getStoredAuth } from "./client.js";
+import { PACKAGE_VERSION, PROVIDER_ID, resolveApiBase } from "./config.js";
+import { createLoader } from "./loader.js";
+import { fetchKiloModels } from "./models.js";
+import { fetchProfile, organizationSelectOptions } from "./profile.js";
+import { setup } from "./v2/index.js";
 /**
  * The Kilo gateway opencode plugin: device-auth login, cross-surface
  * organization selection, and dynamic org-scoped model listing for the

@@ -1,4 +1,4 @@
-import { PROVIDER_ID } from "./config"
+import { PROVIDER_ID } from "./config.js"
 
 export const KILO_AI_SDK_NPM = "@ai-sdk/openai-compatible"
 

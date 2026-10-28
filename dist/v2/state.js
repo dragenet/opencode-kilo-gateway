@@ -1,7 +1,7 @@
-import { resolveApiBase } from "../config";
-import { fetchRawKiloModels } from "../models";
-import { fetchProfile, organizationSelectOptions } from "../profile";
-import { parseKiloToken } from "../token";
+import { resolveApiBase } from "../config.js";
+import { fetchRawKiloModels } from "../models.js";
+import { fetchProfile, organizationSelectOptions } from "../profile.js";
+import { parseKiloToken } from "../token.js";
 export const PERSONAL = "personal";
 const PROFILE_TIMEOUT_MS = 10_000;
 function str(value) {

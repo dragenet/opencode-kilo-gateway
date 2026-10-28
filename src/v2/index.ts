@@ -1,8 +1,8 @@
 import type { Plugin } from "@opencode/plugin"
-import { PROVIDER_ID } from "../config"
-import { registerIntegration } from "./integration"
-import { registerProvider } from "./provider"
-import { createKiloState } from "./state"
+import { PROVIDER_ID } from "../config.js"
+import { registerIntegration } from "./integration.js"
+import { registerProvider } from "./provider.js"
+import { createKiloState } from "./state.js"
 
 function hasFunction(target: unknown, key: string): boolean {
   return typeof (target as Record<string, unknown> | undefined)?.[key] === "function"
