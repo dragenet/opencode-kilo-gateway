@@ -129,7 +129,8 @@ semantic versioning and changelog generation.
   requests in this repo, so until that repository setting is enabled, open the PR manually
   from the `changeset-release/master` branch (title "Version Packages").
 - **Publish**: merging the Version Packages PR triggers the actual `npm publish` via
-  OIDC trusted publishing (no long-lived tokens).
+  OIDC trusted publishing (no long-lived tokens). The same run also creates a GitHub
+  Release `v<version>` (tag + release notes from the `CHANGELOG.md` entry).
 
 The very first release (0.1.0) was published manually from a local machine — this is
 required because npm's Trusted Publisher can only be configured after the package
