@@ -1,7 +1,7 @@
-import type { StoredAuth } from "./client"
-import { resolveApiBase } from "./config"
-import { buildKiloHeaders } from "./headers"
-import { parseKiloToken } from "./token"
+import type { StoredAuth } from "./client.js"
+import { resolveApiBase } from "./config.js"
+import { buildKiloHeaders } from "./headers.js"
+import { parseKiloToken } from "./token.js"
 
 export interface LoaderResult {
   baseURL: string

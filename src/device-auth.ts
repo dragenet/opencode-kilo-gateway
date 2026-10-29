@@ -1,5 +1,5 @@
 // src/device-auth.ts
-import { POLL_INTERVAL_MS } from "./config"
+import { POLL_INTERVAL_MS } from "./config.js"
 
 export interface DeviceAuthInit {
   code: string

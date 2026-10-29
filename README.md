@@ -17,7 +17,20 @@ for the implementation plan.
 
 ## Install
 
-Build the plugin, then either:
+**OpenCode v2 from this fork (no build needed)** — `dist/` is committed on the
+`opencode-v2` branch, so reference a commit directly in `opencode.json`:
+
+```json
+"plugin": ["github:jabbas/opencode-kilo-gateway#<commit-sha>"]
+```
+
+OpenCode v2 installs git plugins with `ignoreScripts`, and npm's git fetcher
+tries to "prepare" any package that declares a `build`/`prepare`/`install`
+script — which fails inside OpenCode. That is why the compile script is named
+`compile`, not `build`. After code changes: `yarn compile`, commit `dist/`,
+bump the SHA in `opencode.json`.
+
+Otherwise, build the plugin, then either:
 
 **Local development** — opencode only auto-discovers individual `.js`/`.ts` files
 placed directly inside `~/.config/opencode/plugins/` (not a symlinked package
@@ -25,7 +38,7 @@ directory), so symlink the built entry point itself:
 
 ```bash
 yarn install
-yarn build
+yarn compile
 ln -sf "$(pwd)/dist/index.js" ~/.config/opencode/plugins/opencode-kilo-gateway.js
 ```
 
@@ -61,6 +74,31 @@ organization header, remove it — this plugin supplies the organization automat
 Your existing `kilo/<vendor>/<model>` references (e.g. `kilo/z-ai/glm-5.1`) keep working
 unchanged — the plugin owns the same `kilo` provider id.
 
+## OpenCode v2
+
+The package also exposes the OpenCode v2 plugin API. The default export is
+`{ id: "kilo-gateway", server, setup }`; the named `KiloGateway` export used by v1 is unchanged.
+v1 loaders read only `server` from the default export, so the same package works on both.
+The minimum v1 version for the object default export is 1.18.29, per OpenCode's V1→V2
+migration guide.
+
+- **Install** — add the package under the `plugins` key of your OpenCode config (the legacy
+  `plugin` key is also read):
+
+  ```jsonc
+  {
+    "plugins": ["@dragenetlabs/opencode-kilo-gateway"]
+  }
+  ```
+
+- **Login** — `opencode auth login kilo` and choose **Login with Kilo** (device authorization).
+- **Organizations are accounts** — pick **Kilo · Add organization** to log in with an
+  organization; each organization becomes its own connected account. Switch between them with
+  `opencode auth switch kilo`, or in the TUI via `/connect` → Connected accounts.
+- **Existing logins** — v1 logins are imported automatically.
+- **Environment variables** — `KILO_API_URL`, `KILO_API_KEY` and `KILO_ORG_ID` behave as
+  described under [Configuration](#configuration).
+
 ## Manual verification checklist
 
 1. `opencode auth login` → select **Kilo** → **Login with Kilo** → approve the device code
@@ -81,7 +119,7 @@ unchanged — the plugin owns the same `kilo` provider id.
 ```bash
 yarn install
 yarn test        # run the unit test suite
-yarn build       # compile TypeScript to dist/
+yarn compile     # compile TypeScript to dist/ (commit dist/ afterwards)
 ```
 
 ## Releasing

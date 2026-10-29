@@ -1,10 +1,11 @@
 import type { Plugin } from "@opencode-ai/plugin"
-import { buildLoginMethod, buildSwitchOrgMethod, type OAuthMethod } from "./auth"
-import { getStoredAuth } from "./client"
-import { PACKAGE_VERSION, PROVIDER_ID, resolveApiBase } from "./config"
-import { createLoader } from "./loader"
-import { fetchKiloModels } from "./models"
-import { fetchProfile, organizationSelectOptions } from "./profile"
+import { buildLoginMethod, buildSwitchOrgMethod, type OAuthMethod } from "./auth.js"
+import { getStoredAuth } from "./client.js"
+import { PACKAGE_VERSION, PROVIDER_ID, resolveApiBase } from "./config.js"
+import { createLoader } from "./loader.js"
+import { fetchKiloModels } from "./models.js"
+import { fetchProfile, organizationSelectOptions } from "./profile.js"
+import { setup } from "./v2/index.js"
 
 /**
  * The Kilo gateway opencode plugin: device-auth login, cross-surface
@@ -46,3 +47,5 @@ export const KiloGateway: Plugin = async (input) => {
     },
   }
 }
+
+export default { id: "kilo-gateway", server: KiloGateway, setup }
