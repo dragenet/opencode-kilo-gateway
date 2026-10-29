@@ -17,20 +17,16 @@ for the implementation plan.
 
 ## Install
 
-**OpenCode v2 from this fork (no build needed)** — `dist/` is committed on the
-`opencode-v2` branch, so reference a commit directly in `opencode.json`:
+Either install the published package or build it locally. OpenCode v2 users: see
+[OpenCode v2](#opencode-v2) below.
 
-```json
-"plugin": ["github:jabbas/opencode-kilo-gateway#<commit-sha>"]
+**Published package** — add to your opencode config's plugin list:
+
+```jsonc
+{
+  "plugin": ["@dragenetlabs/opencode-kilo-gateway"]
+}
 ```
-
-OpenCode v2 installs git plugins with `ignoreScripts`, and npm's git fetcher
-tries to "prepare" any package that declares a `build`/`prepare`/`install`
-script — which fails inside OpenCode. That is why the compile script is named
-`compile`, not `build`. After code changes: `yarn compile`, commit `dist/`,
-bump the SHA in `opencode.json`.
-
-Otherwise, build the plugin, then either:
 
 **Local development** — opencode only auto-discovers individual `.js`/`.ts` files
 placed directly inside `~/.config/opencode/plugins/` (not a symlinked package
@@ -40,14 +36,6 @@ directory), so symlink the built entry point itself:
 yarn install
 yarn compile
 ln -sf "$(pwd)/dist/index.js" ~/.config/opencode/plugins/opencode-kilo-gateway.js
-```
-
-**Published package** — add to your opencode config's plugin list:
-
-```jsonc
-{
-  "plugin": ["@dragenetlabs/opencode-kilo-gateway"]
-}
 ```
 
 ## Configuration
@@ -122,6 +110,11 @@ yarn test        # run the unit test suite
 yarn compile     # compile TypeScript to dist/ (commit dist/ afterwards)
 ```
 
+`dist/` is committed on purpose: OpenCode v2 installs git plugins with `ignoreScripts`
+and cannot build on install. For the same reason the compile script is named `compile`,
+not `build` — npm's git fetcher would try to "prepare" a package declaring a
+`build`/`prepare`/`install` script.
+
 ## Releasing
 
 This project uses [Changesets](https://github.com/changesets/changesets) for automated
@@ -132,7 +125,9 @@ semantic versioning and changelog generation.
   file alongside your code.
 - **Version Packages PR**: merging to `master` triggers `release.yml`, which opens or
   updates a "Version Packages" PR that bumps `package.json` and writes `CHANGELOG.md`
-  from all pending changesets.
+  from all pending changesets. GitHub Actions is currently not permitted to create pull
+  requests in this repo, so until that repository setting is enabled, open the PR manually
+  from the `changeset-release/master` branch (title "Version Packages").
 - **Publish**: merging the Version Packages PR triggers the actual `npm publish` via
   OIDC trusted publishing (no long-lived tokens).
 
