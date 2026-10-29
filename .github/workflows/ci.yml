@@ -1,0 +1,43 @@
+# PR checks: install, compile, test.
+# dist/ is committed on purpose (OpenCode v2 installs git plugins with
+# ignoreScripts, so it can't build on install) — fail if a PR forgot to
+# rebuild and commit it.
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Enable Corepack (Yarn 4)
+        run: corepack enable
+
+      - run: yarn install --immutable
+      - run: yarn compile
+
+      - name: Check dist/ is up to date
+        run: |
+          if [ -n "$(git status --porcelain dist/)" ]; then
+            git status --porcelain dist/
+            git diff --stat dist/
+            echo "::error::dist/ is out of date — run \`yarn compile\` and commit dist/"
+            exit 1
+          fi
+
+      - run: yarn test
