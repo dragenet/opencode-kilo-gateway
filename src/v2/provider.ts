@@ -2,6 +2,7 @@ import type { Model, Plugin } from "@opencode/plugin"
 import { DEFAULT_KILO_API_URL, HEADER_ORGANIZATION_ID, PACKAGE_VERSION, PROVIDER_ID } from "../config.js"
 import { buildKiloHeaders } from "../headers.js"
 import { parseApiPrice, type KiloRawModel } from "../models.js"
+import { renderCreditsError } from "./credits.js"
 import type { KiloState } from "./state.js"
 
 type V2Model = Model.Info
@@ -89,4 +90,8 @@ export async function registerProvider(
     },
     { providerID: PROVIDER_ID },
   )
+
+  // Runs after the gateway answered: a "paid model, no credits" 402 is rewritten
+  // so the failure names the model, the balance and where to top up.
+  await ctx.session.hook("http.response", (event) => renderCreditsError(event), { providerID: PROVIDER_ID })
 }

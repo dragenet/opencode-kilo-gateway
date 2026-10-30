@@ -201,6 +201,29 @@ If there is no token, `models` returns the public list (so the picker isn't empt
 pre-login), or an empty map — decided during implementation based on the public endpoint's
 availability.
 
+### 4.5 Credits errors (402)
+
+Kilo blocks paid models when the account balance is exhausted and answers with
+`402`:
+
+```json
+{"error":{"title":"Paid Model - Credits Required",
+          "message":"Add credits to continue, or switch to a free model",
+          "balance":-0.155322,"buyCreditsUrl":"https://app.kilo.ai/profile"},
+ "error_type":"usage_limit_exceeded"}
+```
+
+`opencode` passes `error.message` straight through and never retries (`isRetryable: false`),
+so the user sees only the generic sentence. The v2 plugin claims exactly this 402 in the
+`http.response` hook (`src/v2/credits.ts`) and rewrites `error.message` to name the requested
+model, the remaining balance and where to top up. Status code, headers (minus body-encoding
+ones) and body shape are preserved: the turn still fails, it just says why.
+
+Only `error_type: usage_limit_exceeded` **and** `title: "Paid Model - Credits Required"` are
+claimed — other 402s (upstream providers report their own credit problems with the same
+status) are left untouched, because rewriting a message the plugin does not understand would
+hide the real cause. The v1 plugin API has no response hook, so v1 behaviour is unchanged.
+
 ---
 
 ## 5. Architecture / module layout

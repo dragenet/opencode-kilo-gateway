@@ -302,11 +302,39 @@ describe("http.request hook", () => {
   })
 })
 
+describe("http.response hook", () => {
+  const creditsResponse = () =>
+    new Response(
+      JSON.stringify({
+        error: {
+          title: "Paid Model - Credits Required",
+          message: "Add credits to continue, or switch to a free model",
+          balance: 0,
+          buyCreditsUrl: "https://app.kilo.ai/profile",
+        },
+        error_type: "usage_limit_exceeded",
+      }),
+      { status: 402, headers: { "content-type": "application/json" } },
+    )
+
+  it("rewrites the credits 402 through the registered hook", async () => {
+    const { hook } = await setup({ orgOptions: [] })
+    const event = { model: { id: "z-ai/glm-5.2" }, response: creditsResponse() }
+
+    await hook("http.response").cb(event)
+
+    const body = (await event.response.json()) as { error: { message: string } }
+    expect(event.response.status).toBe(402)
+    expect(body.error.message).toContain('"z-ai/glm-5.2"')
+    expect(body.error.message).toContain("https://app.kilo.ai/profile")
+  })
+})
+
 describe("registration", () => {
   it("hooks registered with { providerID: 'kilo' }", async () => {
     const { hooks, transforms } = await setup({ orgOptions: [] })
     expect(transforms).toHaveLength(1)
-    expect(hooks.map((h) => h.name).sort()).toEqual(["http.request", "model.request"])
+    expect(hooks.map((h) => h.name).sort()).toEqual(["http.request", "http.response", "model.request"])
     for (const h of hooks) expect(h.options).toEqual({ providerID: "kilo" })
   })
 })
