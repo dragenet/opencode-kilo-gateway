@@ -51,31 +51,52 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to npm (only when nothing left to version)
+        id: publish
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
           PKG_NAME=$(node -p "require('./package.json').name")
           PKG_VERSION=$(node -p "require('./package.json').version")
           if npm view "$PKG_NAME@$PKG_VERSION" version >/dev/null 2>&1; then
             echo "$PKG_NAME@$PKG_VERSION already on npm, skipping publish"
+            echo "published=false" >> "$GITHUB_OUTPUT"
           else
             npm publish --provenance --tag latest
+            echo "published=true" >> "$GITHUB_OUTPUT"
           fi
 
       # Idempotent: creates the tag + release only if missing, so a re-run after a failed step completes it.
+      # The tag goes on the commit npm published from: this run's commit if it just published,
+      # otherwise the gitHead npm recorded for the version.
       - name: Ensure GitHub Release for the current version
         if: steps.changesets.outputs.hasChangesets == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
+          PUBLISHED: ${{ steps.publish.outputs.published }}
         run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
           VERSION=$(node -p "require('./package.json').version")
           TAG="v$VERSION"
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "$TAG already exists, skipping"
             exit 0
           fi
+          if [ "$PUBLISHED" = "true" ]; then
+            TARGET="$GITHUB_SHA"
+          else
+            # Published in an earlier run: tag the commit npm recorded, not this one.
+            TARGET=$(npm view "$PKG_NAME@$VERSION" gitHead)
+            if [ -z "$TARGET" ]; then
+              echo "::error::npm has no gitHead for $PKG_NAME@$VERSION; create $TAG manually on the published commit"
+              exit 1
+            fi
+            if ! git cat-file -e "$TARGET^{commit}" 2>/dev/null; then
+              echo "::error::gitHead $TARGET of $PKG_NAME@$VERSION is not in this repository's history"
+              exit 1
+            fi
+          fi
           NOTES=$(awk -v ver="$VERSION" '$0 == "## " ver {f=1; next} /^## / && f {exit} f' CHANGELOG.md)
           if [ -z "$(printf '%s' "$NOTES" | tr -d '[:space:]')" ]; then
             echo "::warning::No CHANGELOG.md section for $VERSION; using a link instead"
             NOTES="See CHANGELOG.md."
           fi
-          gh release create "$TAG" --title "$TAG" --notes "$NOTES" --target "$GITHUB_SHA"
+          gh release create "$TAG" --title "$TAG" --notes "$NOTES" --target "$TARGET"
