@@ -125,9 +125,8 @@ semantic versioning and changelog generation.
   file alongside your code.
 - **Version Packages PR**: merging to `master` triggers `release.yml`, which opens or
   updates a "Version Packages" PR that bumps `package.json` and writes `CHANGELOG.md`
-  from all pending changesets. GitHub Actions is currently not permitted to create pull
-  requests in this repo, so until that repository setting is enabled, open the PR manually
-  from the `changeset-release/master` branch (title "Version Packages").
+  from all pending changesets. The PR is opened by github-actions and its CI waits for
+  approval: click "Approve and run workflows" on the PR, then merge once green.
 - **Publish**: merging the Version Packages PR triggers the actual `npm publish` via
   OIDC trusted publishing (no long-lived tokens). The same run also creates a GitHub
   Release `v<version>` (tag + release notes from the `CHANGELOG.md` entry).
