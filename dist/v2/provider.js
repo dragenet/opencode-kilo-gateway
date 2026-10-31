@@ -1,6 +1,7 @@
 import { DEFAULT_KILO_API_URL, HEADER_ORGANIZATION_ID, PACKAGE_VERSION, PROVIDER_ID } from "../config.js";
 import { buildKiloHeaders } from "../headers.js";
 import { parseApiPrice } from "../models.js";
+import { renderCreditsError } from "./credits.js";
 // Model.Info limits are integers: floor finite non-negative numbers, otherwise use the fallback.
 function toInt(value, fallback) {
     return typeof value === "number" && Number.isFinite(value) && value >= 0 ? Math.floor(value) : fallback;
@@ -71,4 +72,7 @@ export async function registerProvider(ctx, state) {
         if (state.auth)
             event.request.headers.set("authorization", "Bearer " + state.auth.token);
     }, { providerID: PROVIDER_ID });
+    // Runs after the gateway answered: a "paid model, no credits" 402 is rewritten
+    // so the failure names the model, the balance and where to top up.
+    await ctx.session.hook("http.response", (event) => renderCreditsError(event), { providerID: PROVIDER_ID });
 }

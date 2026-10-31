@@ -98,13 +98,13 @@ describe("setup", () => {
     await expect(setup({ integration: {}, provider: {}, session: {} })).resolves.toBeUndefined()
   })
 
-  it("registers integration, provider transform and two session hooks", async () => {
+  it("registers integration, provider transform and three session hooks", async () => {
     const f = fakeCtx()
     const cleanup = await setup(f.ctx)
     expect(typeof cleanup).toBe("function")
     expect(f.calls.integrationTransform).toBe(1)
     expect(f.calls.providerTransform).toBe(1)
-    expect(f.calls.hooks).toBe(2)
+    expect(f.calls.hooks).toBe(3)
     cleanup!()
   })
 
