@@ -1,6 +1,6 @@
 {
   "name": "@dragenetlabs/opencode-kilo-gateway",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "opencode auth + provider plugin for the Kilo gateway: device-auth login, cross-surface organization selection, and dynamic model listing.",
   "type": "module",
   "license": "MIT",
