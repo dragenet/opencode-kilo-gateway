@@ -77,6 +77,17 @@ export function createKiloState(deps) {
         const resolved = await resolveAuth(deps);
         const fetchImpl = deps.fetchImpl ?? fetch;
         let auth = resolved?.auth;
+        // Stale generations must be discarded before ANY state assignment.
+        if (gen !== generation)
+            return;
+        // Publish the credential now, before the network-bound profile and models
+        // fetches below. Request hooks read `state.auth` live, and a server that has
+        // just started issues its first model request long before the catalog
+        // arrives; without this the token and the organization header would be
+        // missing on that request and the gateway would bill the personal account.
+        const previous = state.auth;
+        const immediateOrgName = resolved?.metadataOrgName;
+        state.auth = auth && immediateOrgName !== undefined ? { ...auth, orgName: immediateOrgName } : auth;
         // Profile and models are independent: a failure of one keeps the previous
         // value of that part of the state (undefined here = "not fetched").
         let orgOptions;
@@ -95,7 +106,6 @@ export function createKiloState(deps) {
             if (modelsResult.status === "fulfilled")
                 models = modelsResult.value;
             // Org name precedence: profile > stored metadata > previous name (same org).
-            const previous = state.auth;
             const previousName = previous && previous.orgId === orgId && previous.token === token ? previous.orgName : undefined;
             const orgName = profileOrgName ?? resolved?.metadataOrgName ?? previousName;
             if (orgName !== undefined)
@@ -113,7 +123,6 @@ export function createKiloState(deps) {
         // effective org changes, a failed models fetch clears models (undefined →
         // provider falls back to the catalog). With the same account, a failed
         // fetch keeps the previous value.
-        const previous = state.auth;
         const tokenChanged = previous?.token !== auth?.token;
         const accountChanged = tokenChanged || previous?.orgId !== auth?.orgId;
         const nextOrgOptions = orgOptions ?? (tokenChanged ? [] : state.orgOptions);
