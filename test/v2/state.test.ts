@@ -148,6 +148,30 @@ describe("createKiloState", () => {
     expect(onChange).toHaveBeenCalledTimes(1)
   })
 
+  it("publishes auth while the profile/models fetches are still in flight", async () => {
+    const conn = connection({ type: "oauth", access: "tok", refresh: "r", expires: 1, metadata: { accountID: "a" } })
+    let release!: () => void
+    const gate = new Promise<void>((resolve) => (release = resolve))
+    const fetchImpl = vi.fn(async (url: string) => {
+      await gate
+      return url.endsWith("/api/profile") ? json(profileBody) : json({ data: [toolModel] })
+    })
+    const { state, refresh, onChange } = setup({ conn, fetchImpl })
+
+    const pending = refresh()
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalled())
+    // A cold-started server issues its first model request while the catalog is
+    // still loading; request hooks read `state.auth` live, so the token and the
+    // organization must be available before the fetches settle — otherwise the
+    // request goes out unscoped and the gateway bills the personal account.
+    expect(state.auth).toMatchObject({ token: "tok", orgId: "a" })
+
+    release()
+    await pending
+    expect(state.auth).toMatchObject({ token: "tok", orgId: "a", orgName: "Org A" })
+    expect(onChange).toHaveBeenCalledTimes(1)
+  })
+
   it("profile failure keeps models; models failure keeps previous models", async () => {
     const conn = connection({ type: "oauth", access: "tok", refresh: "r", expires: 1 })
     let profileOk = true
