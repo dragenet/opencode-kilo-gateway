@@ -1,0 +1,79 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":semanticCommits"
+  ],
+  "schedule": ["before 6am on monday"],
+  "timezone": "Europe/Warsaw",
+  "prConcurrentLimit": 5,
+  "labels": ["dependencies"],
+  "automerge": false,
+  "minimumReleaseAge": "3 days",
+  "osvVulnerabilityAlerts": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "enabledManagers": ["npm", "github-actions"],
+  "packageRules": [
+    {
+      "description": "Runner image (`runs-on: ubuntu-latest`): changing it is a deliberate decision, never a Renovate pull request",
+      "matchDatasources": ["github-runners"],
+      "enabled": false
+    },
+    {
+      "description": "All npm packages here are devDependencies (build and test tooling); only dist/ ships. Ranges in package.json stay as written; in-range updates only move yarn.lock. chore(deps): no changeset, no release",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "rangeStrategy": "update-lockfile",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps"
+    },
+    {
+      "description": "Dev dependencies: group minor and patch updates; majors come as separate PRs",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "dev dependencies (minor and patch)"
+    },
+    {
+      "description": "OpenCode plugin SDKs (v1 @opencode-ai/plugin, v2 @opencode/plugin) define the plugin API this package is built against: every update is its own PR, never hidden in the group",
+      "matchPackageNames": ["@opencode/plugin", "@opencode-ai/plugin"],
+      "groupName": null,
+      "prBodyNotes": [
+        "**OpenCode plugin SDK update.** Check the OpenCode release notes for plugin API changes, run `yarn compile` and `yarn test`, and commit `dist/` if the build output changed (CI fails on a stale `dist/`)."
+      ]
+    },
+    {
+      "description": "TypeScript can change the emitted JavaScript; dist/ is committed and CI fails when it is stale",
+      "matchPackageNames": ["typescript"],
+      "prBodyNotes": [
+        "**TypeScript update.** If the CI step \"Check dist/ is up to date\" fails, check out this branch, run `yarn compile` and push the updated `dist/` to it. Renovate cannot rebuild `dist/` itself."
+      ]
+    },
+    {
+      "description": "Yarn itself (`packageManager` in package.json; the binary is committed under .yarn/releases and referenced by yarnPath): its own PR",
+      "matchDepTypes": ["packageManager"],
+      "groupName": null,
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps",
+      "prBodyNotes": [
+        "**Yarn update.** Check that this PR also replaced `.yarn/releases/yarn-*.cjs` and updated `yarnPath` in `.yarnrc.yml` to the same version as `packageManager`."
+      ]
+    },
+    {
+      "description": "GitHub Actions do not change the published package: ci(deps)",
+      "matchManagers": ["github-actions"],
+      "semanticCommitType": "ci",
+      "semanticCommitScope": "deps"
+    },
+    {
+      "description": "GitHub Actions: group minor, patch and digest updates (SHA pins and their version comments are kept); majors come as separate PRs",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
+      "groupName": "github actions (minor and patch)"
+    }
+  ]
+}
