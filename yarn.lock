@@ -590,7 +590,7 @@ __metadata:
   resolution: "@dragenetlabs/opencode-kilo-gateway@workspace:."
   dependencies:
     "@changesets/cli": "npm:^2.31.1"
-    "@opencode-ai/plugin": "npm:1.18.2"
+    "@opencode-ai/plugin": "npm:1.19.5"
     "@opencode/plugin": "npm:2.0.22"
     "@types/node": "npm:^22.0.0"
     typescript: "npm:^5.6.0"
@@ -1026,18 +1026,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opencode-ai/plugin@npm:1.18.2":
-  version: 1.18.2
-  resolution: "@opencode-ai/plugin@npm:1.18.2"
+"@opencode-ai/plugin@npm:1.19.5":
+  version: 1.19.5
+  resolution: "@opencode-ai/plugin@npm:1.19.5"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.8"
-    "@opencode-ai/sdk": "npm:1.18.2"
+    "@opencode-ai/sdk": "npm:1.19.5"
     effect: "npm:4.0.0-beta.83"
     zod: "npm:4.1.8"
   peerDependencies:
-    "@opentui/core": ">=0.4.3"
-    "@opentui/keymap": ">=0.4.3"
-    "@opentui/solid": ">=0.4.3"
+    "@opentui/core": ">=0.4.5"
+    "@opentui/keymap": ">=0.4.5"
+    "@opentui/solid": ">=0.4.5"
   peerDependenciesMeta:
     "@opentui/core":
       optional: true
@@ -1045,16 +1045,16 @@ __metadata:
       optional: true
     "@opentui/solid":
       optional: true
-  checksum: 10c0/269f2636d648c34430edbb53fb861887b8c7534c73c9bbddf1738fea9d5cc042f8e15df6f71d31e6ab00495a506da16263674b53945060c37f913e05e45f75f9
+  checksum: 10c0/a77baa868e319ccb65fc0614b6c00aa914d66fc63a5c7bb23329712de0a2eb432c0f41191b1d5618dac02a16e6ac91590a9f5c0724a6dc483c86eadc1dcf7c31
   languageName: node
   linkType: hard
 
-"@opencode-ai/sdk@npm:1.18.2":
-  version: 1.18.2
-  resolution: "@opencode-ai/sdk@npm:1.18.2"
+"@opencode-ai/sdk@npm:1.19.5":
+  version: 1.19.5
+  resolution: "@opencode-ai/sdk@npm:1.19.5"
   dependencies:
     cross-spawn: "npm:7.0.6"
-  checksum: 10c0/ea870df39d128466dd20b217e844441b89ac3a7aa76af26041fc0b4168d61e6c9b4e862ed25296d15ef12754b96954c1d2d9fdbb52d580090d119e0eb5866f7a
+  checksum: 10c0/490d115f7f4654d4cdc5c13c03aed3d60486021b57d8e9a5932b67f46ff4fb5a3ee74188c50159444cbac88e309ef49018e098caded017498764766d06ed72cb
   languageName: node
   linkType: hard
 
