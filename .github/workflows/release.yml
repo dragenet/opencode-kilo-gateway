@@ -40,19 +40,20 @@ jobs:
         id: changesets
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          # `publish` is intentionally omitted: the actual npm publish happens
+          # `publish-script` is intentionally omitted: the actual npm publish happens
           # in a separate step below, using plain `npm publish --provenance --tag latest`
           # directly so npm's OIDC trusted-publishing flow is exercised
           # unambiguously (changesets/action's own publish path would shell
           # out via package-manager-detector to `yarn npm publish`, which has
-          # no confirmed OIDC support).
-          version: yarn changeset version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # no confirmed OIDC support). Without it the action never reads
+          # `create-github-releases` / `push-git-tags`: tags and releases come
+          # from the "Ensure GitHub Release" step below.
+          version-script: yarn changeset version
+          github-token: ${{ github.token }}
 
       - name: Publish to npm (only when nothing left to version)
         id: publish
-        if: steps.changesets.outputs.hasChangesets == 'false'
+        if: steps.changesets.outputs.has-changesets == 'false'
         run: |
           PKG_NAME=$(node -p "require('./package.json').name")
           PKG_VERSION=$(node -p "require('./package.json').version")
@@ -68,7 +69,7 @@ jobs:
       # The tag goes on the commit npm published from: this run's commit if it just published,
       # otherwise the gitHead npm recorded for the version.
       - name: Ensure GitHub Release for the current version
-        if: steps.changesets.outputs.hasChangesets == 'false'
+        if: steps.changesets.outputs.has-changesets == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           PUBLISHED: ${{ steps.publish.outputs.published }}

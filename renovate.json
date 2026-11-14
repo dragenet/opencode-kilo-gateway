@@ -74,6 +74,15 @@
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
       "groupName": "github actions (minor and patch)"
+    },
+    {
+      "description": "release.yml runs only after a merge to master; the pull request CI (ci.yml) never exercises it, so a green PR proves nothing about it. Majors of actions used there need their release notes read",
+      "matchManagers": ["github-actions"],
+      "matchFileNames": [".github/workflows/release.yml"],
+      "matchUpdateTypes": ["major"],
+      "prBodyNotes": [
+        "**Action used by `release.yml`.** That workflow runs only after merge, so this PR's CI does not test it. Before merging, read the action's release notes for renamed or removed inputs and outputs and check every `with:` / `outputs.` use in `.github/workflows/release.yml`."
+      ]
     }
   ]
 }
