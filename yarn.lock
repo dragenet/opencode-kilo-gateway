@@ -553,7 +553,7 @@ __metadata:
   resolution: "@dragenetlabs/opencode-kilo-gateway@workspace:."
   dependencies:
     "@changesets/cli": "npm:^3.0.0"
-    "@opencode-ai/plugin": "npm:1.19.5"
+    "@opencode-ai/plugin": "npm:1.19.6"
     "@opencode/plugin": "npm:2.3.0"
     "@types/node": "npm:^26.0.0"
     typescript: "npm:^7.0.0"
@@ -968,12 +968,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opencode-ai/plugin@npm:1.19.5":
-  version: 1.19.5
-  resolution: "@opencode-ai/plugin@npm:1.19.5"
+"@opencode-ai/plugin@npm:1.19.6":
+  version: 1.19.6
+  resolution: "@opencode-ai/plugin@npm:1.19.6"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.8"
-    "@opencode-ai/sdk": "npm:1.19.5"
+    "@opencode-ai/sdk": "npm:1.19.6"
     effect: "npm:4.0.0-beta.83"
     zod: "npm:4.1.8"
   peerDependencies:
@@ -987,16 +987,16 @@ __metadata:
       optional: true
     "@opentui/solid":
       optional: true
-  checksum: 10c0/a77baa868e319ccb65fc0614b6c00aa914d66fc63a5c7bb23329712de0a2eb432c0f41191b1d5618dac02a16e6ac91590a9f5c0724a6dc483c86eadc1dcf7c31
+  checksum: 10c0/54489ff4dce7be040dcc39a9fb253e303aedc66706920e163b00622aca40d2cdad353349426c342877231bfae9ee92e4e9fed72e1da817362b60589780f46de8
   languageName: node
   linkType: hard
 
-"@opencode-ai/sdk@npm:1.19.5":
-  version: 1.19.5
-  resolution: "@opencode-ai/sdk@npm:1.19.5"
+"@opencode-ai/sdk@npm:1.19.6":
+  version: 1.19.6
+  resolution: "@opencode-ai/sdk@npm:1.19.6"
   dependencies:
     cross-spawn: "npm:7.0.6"
-  checksum: 10c0/490d115f7f4654d4cdc5c13c03aed3d60486021b57d8e9a5932b67f46ff4fb5a3ee74188c50159444cbac88e309ef49018e098caded017498764766d06ed72cb
+  checksum: 10c0/22d61736f4fb685b3311aa98ff0a29be32ce1e22b43fce5b50d564d3ca575bbc840478232614bce0b77e1e3130f191e2324935261100e4cc6f857e69bd462436
   languageName: node
   linkType: hard
 
