@@ -554,7 +554,7 @@ __metadata:
   dependencies:
     "@changesets/cli": "npm:^3.0.0"
     "@opencode-ai/plugin": "npm:1.19.5"
-    "@opencode/plugin": "npm:2.3.0"
+    "@opencode/plugin": "npm:2.4.1"
     "@types/node": "npm:^26.0.0"
     typescript: "npm:^7.0.0"
     vite: "npm:^8.3.7"
@@ -1000,27 +1000,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opencode/ai@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@opencode/ai@npm:2.3.0"
+"@opencode/ai@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@opencode/ai@npm:2.4.1"
   dependencies:
     "@aws-sdk/credential-providers": "npm:3.1057.0"
-    "@opencode/schema": "npm:2.3.0"
+    "@opencode/schema": "npm:2.4.1"
     "@smithy/eventstream-codec": "npm:4.2.14"
     "@smithy/util-utf8": "npm:4.2.2"
     aws4fetch: "npm:1.0.20"
     effect: "npm:4.1.0"
     google-auth-library: "npm:10.5.0"
-  checksum: 10c0/4ad742e98e9bd573add4fdc1dac28f348e49ea6d1bd369293ca940c58fe658d15dd1a85a0685723dba7df0dfca3163a481e821ae2071d2fc3b4496f7013dec5b
+  checksum: 10c0/62897676c845824d909490d9d9534b4dcd39609fef1e7272a0f1956bb22c5ced46f330582243c3d3e56d52b8556041c359a5a16feff0d01c4b9b79b07e08db7d
   languageName: node
   linkType: hard
 
-"@opencode/client@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@opencode/client@npm:2.3.0"
+"@opencode/client@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@opencode/client@npm:2.4.1"
   dependencies:
-    "@opencode/protocol": "npm:2.3.0"
-    "@opencode/schema": "npm:2.3.0"
+    "@opencode/protocol": "npm:2.4.1"
+    "@opencode/schema": "npm:2.4.1"
   peerDependencies:
     effect: 4.1.0
     solid-js: ">=1.9.0"
@@ -1029,25 +1029,25 @@ __metadata:
       optional: true
     solid-js:
       optional: true
-  checksum: 10c0/11572314c02aa64562ec3debe7a5ea4dd870b4036559641f8d112546d396e8c8fe08764b9f762715b58530c7041be2ccbe0df00f2f5cd8eca61e2a5ec3fb5ef6
+  checksum: 10c0/d39514932cc6b9c84e0eddccc0c7f69b2d0e808cc68bf00396fee042cf79ad2d6c3424f1ec122cf475fc6c18f28d25d73deca06aa7fb3b378ed9e4511a453517
   languageName: node
   linkType: hard
 
-"@opencode/plugin@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@opencode/plugin@npm:2.3.0"
+"@opencode/plugin@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@opencode/plugin@npm:2.4.1"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.8"
-    "@opencode/ai": "npm:2.3.0"
-    "@opencode/client": "npm:2.3.0"
-    "@opencode/protocol": "npm:2.3.0"
-    "@opencode/schema": "npm:2.3.0"
-    "@opencode/util": "npm:2.3.0"
+    "@opencode/ai": "npm:2.4.1"
+    "@opencode/client": "npm:2.4.1"
+    "@opencode/protocol": "npm:2.4.1"
+    "@opencode/schema": "npm:2.4.1"
+    "@opencode/util": "npm:2.4.1"
     effect: "npm:4.1.0"
   peerDependencies:
-    "@opencode/theme": 2.3.0
-    "@opentui/core": ">=0.8.4"
-    "@opentui/solid": ">=0.8.4"
+    "@opencode/theme": 2.4.1
+    "@opentui/core": ">=0.8.0"
+    "@opentui/solid": ">=0.8.0"
     electron: "*"
     solid-js: ">=1.9.0"
     vite: ">=6"
@@ -1067,33 +1067,33 @@ __metadata:
       optional: true
     vite-plugin-solid:
       optional: true
-  checksum: 10c0/2674a40486864736da4b99ce895dfffb5e32d9e30b101c683d97d6cfb8383d6b7060164a5c98b263858f74f7b895c43da3f6994aceca1cccdbcdd9b945635891
+  checksum: 10c0/97b8948e6aa031ae694274d0680f5088b6793c48a4be337b2a28f58c5e6042f748594f5eb3d065c5ed2eb8a92acce96d667401917844e48b87307c009a81eecc
   languageName: node
   linkType: hard
 
-"@opencode/protocol@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@opencode/protocol@npm:2.3.0"
+"@opencode/protocol@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@opencode/protocol@npm:2.4.1"
   dependencies:
-    "@opencode/schema": "npm:2.3.0"
+    "@opencode/schema": "npm:2.4.1"
     effect: "npm:4.1.0"
-  checksum: 10c0/b149cb174631865995880faa6791127be293dcbd715cad3679d4f9f5398fb65f6ead78d0a26135da5d928dd5a2baed32a9c4a91fed78f49ff8f9b7d1b5cc609b
+  checksum: 10c0/a2def788fadf6c122860df86178731a74e26b4295b38dfee3f8b5982f08bcb1d25e64b289cc2e296ad4cecb2466f3849fd1d053ff43b495516ba497bf4963b9a
   languageName: node
   linkType: hard
 
-"@opencode/schema@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@opencode/schema@npm:2.3.0"
+"@opencode/schema@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@opencode/schema@npm:2.4.1"
   dependencies:
     "@standard-schema/spec": "npm:1.1.0"
     effect: "npm:4.1.0"
-  checksum: 10c0/8506abee20ae0df2b3871c831b5def0cf2b02cf4d58c7b38911f9a9399a7fdaf1e985ce963de38d10a9cb429bf1a6cef0de0165f87aa828c83b4495ec689ebbb
+  checksum: 10c0/655a4203c4e3535d16bc210019378daf888eedd35ffaa0f3b92e64fc72f9a525e0e3f75f4c23238086d84cc6c5ee44f52f194bb68174281328d7cbb0d090070e
   languageName: node
   linkType: hard
 
-"@opencode/util@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@opencode/util@npm:2.3.0"
+"@opencode/util@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@opencode/util@npm:2.4.1"
   dependencies:
     "@effect/opentelemetry": "npm:4.1.0"
     "@effect/platform-node": "npm:4.1.0"
@@ -1117,7 +1117,7 @@ __metadata:
     npm-package-arg: "npm:13.0.2"
     open: "npm:11.0.4"
     pacote: "npm:21.5.1"
-  checksum: 10c0/046659cc11e9e0913331e3bc0e82785e61eaa6e39087496ecdf25dfbe6a2d828ce9d589622bb6d148dda00a644fc7eca00a3af598f3c3f3fe32b9405208a3ced
+  checksum: 10c0/684dfa9b5b69e1f84072dc2eae9d71ca5628d8ee30a03331d381a20a988a61eecd32a572ea479977140131d0180a28d193f734a87e1a23a977d5993d9ebebd76
   languageName: node
   linkType: hard
 
